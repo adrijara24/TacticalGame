@@ -18,12 +18,24 @@ public class Tile : IPersistent
 
     int damage;
 
+    int passableBy;
+
     public Tile(TerrainType type, Stats bonusStats, int movementCost, int damage)
     {
         this.type = type;
         this.bonusStats = bonusStats;
         this.movementCost = movementCost;
         this.damage = damage;
+        this.passableBy = (int)(Mount.MountType.GROUND | Mount.MountType.FLYING | Mount.MountType.WATER);
+    }
+
+    public Tile(TerrainType type, Stats bonusStats, int movementCost, int damage, int passableBy)
+    {
+        this.type = type;
+        this.bonusStats = bonusStats;
+        this.movementCost = movementCost;
+        this.damage = damage;
+        this.passableBy = passableBy;
     }
 
     public TerrainType Type => type;
@@ -33,6 +45,21 @@ public class Tile : IPersistent
     public int MovementCost => movementCost;
 
     public int Damage => damage;
+
+    public bool IsPassableBy(Mount mount)
+    {
+        switch (mount.Type)
+        {
+            case Mount.MountType.GROUND:
+                return type != TerrainType.WATER;
+            case Mount.MountType.FLYING:
+                return true;
+            case Mount.MountType.WATER:
+                return type == TerrainType.WATER;
+            default:
+                return false;
+        }
+    }
 
     public JsonElement ToJson()
     {

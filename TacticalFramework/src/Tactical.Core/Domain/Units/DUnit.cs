@@ -7,6 +7,8 @@ public class Unit : IPersistent
     private Stats baseStats;
     private Weapon weapon;
 
+    private Mount mount;
+
     private Stats aggregatedStats;
 
     public Stats Stats
@@ -24,15 +26,34 @@ public class Unit : IPersistent
         }
     }
 
+    public Mount Mount
+    {
+        get => mount;
+        set
+        {
+            mount = value;
+            UpdateStats();
+        }
+    }
+
     private void UpdateStats()
     {
-        aggregatedStats = baseStats + weapon.Stats;
+        aggregatedStats = baseStats + weapon.Stats + mount.Stats;
     }
 
     public Unit(Stats baseStats, Weapon weapon)
     {
         this.baseStats = baseStats;
         this.weapon = weapon;
+        this.mount = new Mount();
+        UpdateStats();
+    }
+
+    public Unit(Stats baseStats, Weapon weapon, Mount mount)
+    {
+        this.baseStats = baseStats;
+        this.weapon = weapon;
+        this.mount = mount;
         UpdateStats();
     }
 
