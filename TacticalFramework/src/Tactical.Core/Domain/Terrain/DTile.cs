@@ -48,17 +48,7 @@ public class Tile : IPersistent
 
     public bool IsPassableBy(Mount mount)
     {
-        switch (mount.Type)
-        {
-            case Mount.MountType.GROUND:
-                return type != TerrainType.WATER;
-            case Mount.MountType.FLYING:
-                return true;
-            case Mount.MountType.WATER:
-                return type == TerrainType.WATER;
-            default:
-                return false;
-        }
+        return (passableBy & (int)mount.Type) != 0;
     }
 
     public JsonElement ToJson()
