@@ -16,10 +16,10 @@ horseStats.movement = 4;
 
 DClass horseClass = new DClass("Horse", horseStats, [Weapon.WeaponType.SWORD, Weapon.WeaponType.SPEAR], DClass.EMovementType.GROUND);
 
-Weapon A = new Weapon(test2, Weapon.WeaponType.SWORD);
-Weapon B = new Weapon(test2, Weapon.WeaponType.SPEAR);
-Weapon C = new Weapon(test2, Weapon.WeaponType.AXE);
-Weapon D = new Weapon(test2, Weapon.WeaponType.SCYTHE);
+Weapon A = new Weapon("SwordTest", test2, Weapon.WeaponType.SWORD);
+Weapon B = new Weapon("SpearTest", test2, Weapon.WeaponType.SPEAR);
+Weapon C = new Weapon("AxeTest", test2, Weapon.WeaponType.AXE);
+Weapon D = new Weapon("ScytheTest", test2, Weapon.WeaponType.SCYTHE);
 
 Unit myObj = new Unit("HorseRider#1", horseClass, A);
 myObj.Stats.Log();

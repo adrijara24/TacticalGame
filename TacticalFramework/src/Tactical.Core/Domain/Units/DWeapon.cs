@@ -2,7 +2,7 @@ using System.Text.Json;
 
 namespace Tactical.Core.Domain.Units;
 
-public class Weapon : IPersistent
+public class Weapon : DItem, IPersistent
 {
     Stats stats;
     public enum WeaponType
@@ -12,7 +12,7 @@ public class Weapon : IPersistent
 
     WeaponType type;
 
-    public Weapon(Stats stats, WeaponType type)
+    public Weapon(String itemID, Stats stats, WeaponType type) : base(itemID)
     {
         this.stats = stats;
         this.type = type;
@@ -37,12 +37,12 @@ public class Weapon : IPersistent
         }
     }
 
-    public JsonElement ToJson()
+    public new JsonElement ToJson()
     {
         throw new NotImplementedException();
     }
 
-    public void FromJson(JsonElement json)
+    public new void FromJson(JsonElement json)
     {
         throw new NotImplementedException();
     }
