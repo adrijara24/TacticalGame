@@ -26,7 +26,7 @@ public class Tile : IPersistent
         this.bonusStats = bonusStats;
         this.movementCost = movementCost;
         this.damage = damage;
-        this.passableBy = (int)(Mount.MountType.GROUND | Mount.MountType.FLYING | Mount.MountType.WATER);
+        this.passableBy = (int)(DClass.EMovementType.GROUND | DClass.EMovementType.FLYING | DClass.EMovementType.WATER);
     }
 
     public Tile(TerrainType type, Stats bonusStats, int movementCost, int damage, int passableBy)
@@ -46,9 +46,9 @@ public class Tile : IPersistent
 
     public int Damage => damage;
 
-    public bool IsPassableBy(Mount mount)
+    public bool IsPassableBy(DClass unitClass)
     {
-        return (passableBy & (int)mount.Type) != 0;
+        return (passableBy & (int)unitClass.MovementType) != 0;
     }
 
     public JsonElement ToJson()

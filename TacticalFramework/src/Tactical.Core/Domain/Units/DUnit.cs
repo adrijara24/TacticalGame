@@ -4,12 +4,14 @@ namespace Tactical.Core.Domain.Units;
 
 public class Unit : IPersistent
 {
-    private Stats baseStats;
+    private DClass unitClass;
     private Weapon weapon;
 
-    private Mount mount;
-
     private Stats aggregatedStats;
+
+    private String unitID;
+
+    public String ID => unitID;
 
     public Stats Stats
     {
@@ -26,34 +28,16 @@ public class Unit : IPersistent
         }
     }
 
-    public Mount Mount
-    {
-        get => mount;
-        set
-        {
-            mount = value;
-            UpdateStats();
-        }
-    }
-
     private void UpdateStats()
     {
-        aggregatedStats = baseStats + weapon.Stats + mount.Stats;
+        aggregatedStats = unitClass.Stats + weapon.Stats;
     }
 
-    public Unit(Stats baseStats, Weapon weapon)
+    public Unit(String unitID, DClass unitClass, Weapon weapon)
     {
-        this.baseStats = baseStats;
+        this.unitID = unitID;
+        this.unitClass = unitClass;
         this.weapon = weapon;
-        this.mount = new Mount();
-        UpdateStats();
-    }
-
-    public Unit(Stats baseStats, Weapon weapon, Mount mount)
-    {
-        this.baseStats = baseStats;
-        this.weapon = weapon;
-        this.mount = mount;
         UpdateStats();
     }
 

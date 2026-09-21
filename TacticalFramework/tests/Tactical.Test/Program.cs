@@ -10,18 +10,18 @@ test2.hp = 2;
 test2.mana = 0;
 test2.strength = 20;
 
-Stats mountTest = new Stats();
-mountTest.hp = 5;
-mountTest.movement = 4;
+Stats horseStats = new Stats();
+horseStats.hp = 5;
+horseStats.movement = 4;
 
-Mount horseMount = new Mount("Horse", mountTest, Mount.MountType.GROUND);
+DClass horseClass = new DClass("Horse", horseStats, [Weapon.WeaponType.SWORD, Weapon.WeaponType.SPEAR], DClass.EMovementType.GROUND);
 
 Weapon A = new Weapon(test2, Weapon.WeaponType.SWORD);
 Weapon B = new Weapon(test2, Weapon.WeaponType.SPEAR);
 Weapon C = new Weapon(test2, Weapon.WeaponType.AXE);
 Weapon D = new Weapon(test2, Weapon.WeaponType.SCYTHE);
 
-Unit myObj = new Unit(test1, A, horseMount);
+Unit myObj = new Unit("HorseRider#1", horseClass, A);
 myObj.Stats.Log();
 
 Console.WriteLine(Weapon.HasAdvantage(A, B));
