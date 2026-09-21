@@ -38,12 +38,21 @@ public class Map : IPersistent
         set => mapName = value;
     }
 
+    public Tile this[int x, int y]
+    {
+        get => GetTile(x, y);
+        set
+        {
+            if (x < 0 || x >= Width || y < 0 || y >= Height)
+                throw new ArgumentOutOfRangeException("Coordinates are out of bounds.");
+            tiles[x, y] = value;
+        }
+    }
+
     public Tile GetTile(int x, int y)
     {
         if (x < 0 || x >= Width || y < 0 || y >= Height)
-        {
             throw new ArgumentOutOfRangeException("Coordinates are out of bounds.");
-        }
         return tiles[x, y];
     }
 

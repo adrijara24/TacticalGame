@@ -4,13 +4,23 @@ namespace Tactical.Core.Domain.Units;
 
 public class Weapon : IPersistent
 {
-    public Stats stats;
+    Stats stats;
     public enum WeaponType
     {
         SWORD = 0, SPEAR, AXE, BOW, FISTS, STAFF, SCYTHE, NONE
     }
 
-    public WeaponType type;
+    WeaponType type;
+
+    public Weapon(Stats stats, WeaponType type)
+    {
+        this.stats = stats;
+        this.type = type;
+    }
+
+    public WeaponType Type => type;
+
+    public Stats Stats => stats;
 
     public static bool HasAdvantage(Weapon A, Weapon B)
     {

@@ -10,13 +10,13 @@ public class Tile : IPersistent
         GRASS = 0, WATER, MOUNTAIN, FOREST, ROAD, NONE
     }
 
-    public TerrainType type;
+    TerrainType type;
 
-    public Stats bonusStats;
+    Stats bonusStats;
 
-    public int movementCost;
+    int movementCost;
 
-    public int damage;
+    int damage;
 
     public Tile(TerrainType type, Stats bonusStats, int movementCost, int damage)
     {
@@ -25,6 +25,14 @@ public class Tile : IPersistent
         this.movementCost = movementCost;
         this.damage = damage;
     }
+
+    public TerrainType Type => type;
+
+    public Stats BonusStats => bonusStats;
+
+    public int MovementCost => movementCost;
+
+    public int Damage => damage;
 
     public JsonElement ToJson()
     {

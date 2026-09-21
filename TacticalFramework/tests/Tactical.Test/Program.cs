@@ -1,13 +1,5 @@
 ﻿using Tactical.Core.Domain.Units;
 
-var myObj = new Unit();
-
-
-Weapon A = new Weapon();
-Weapon B = new Weapon();
-Weapon C = new Weapon();
-Weapon D = new Weapon();
-
 Stats test1 = new Stats();
 test1.hp = 10;
 test1.mana = 1;
@@ -18,19 +10,13 @@ test2.hp = 2;
 test2.mana = 0;
 test2.strength = 20;
 
-myObj.baseStats = test1;
-myObj.baseStats.Log();
-A.stats = test2;
-myObj.weapon = A;
-Console.WriteLine();
+Weapon A = new Weapon(test2, Weapon.WeaponType.SWORD);
+Weapon B = new Weapon(test2, Weapon.WeaponType.SPEAR);
+Weapon C = new Weapon(test2, Weapon.WeaponType.AXE);
+Weapon D = new Weapon(test2, Weapon.WeaponType.SCYTHE);
 
-myObj.GetAccumulatedStats().Log();
-Console.WriteLine();
-
-A.type = Weapon.WeaponType.SWORD;
-B.type = Weapon.WeaponType.SPEAR;
-C.type = Weapon.WeaponType.AXE;
-D.type = Weapon.WeaponType.SCYTHE;
+Unit myObj = new Unit(test1, A);
+myObj.Stats.Log();
 
 Console.WriteLine(Weapon.HasAdvantage(A, B));
 Console.WriteLine(Weapon.HasAdvantage(A, C));
