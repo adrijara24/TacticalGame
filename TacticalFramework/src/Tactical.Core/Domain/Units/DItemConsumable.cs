@@ -2,15 +2,14 @@ using Tactical.Core.Domain.Units;
 using Tactical.Core.Domain;
 using System.Text.Json;
 
-class DConsumable : DItem, IPersistent
+public class DItemConsumable : DItem, IPersistent
 {
     Stats stats;
     int uses;
-
     int damage;
     int healing;
 
-    public DConsumable(String itemID, int uses, Stats stats) : base(itemID)
+    public DItemConsumable(String itemID, int uses, Stats stats) : base(itemID)
     {
         this.stats = stats;
         this.uses = uses;
@@ -18,7 +17,7 @@ class DConsumable : DItem, IPersistent
         this.healing = 0;
     }
 
-    public DConsumable(String itemID, int uses, int damage, int healing) : base(itemID)
+    public DItemConsumable(String itemID, int uses, int damage, int healing) : base(itemID)
     {
         this.stats = new Stats();
         this.uses = uses;
@@ -26,7 +25,7 @@ class DConsumable : DItem, IPersistent
         this.healing = 0;
     }
 
-    public DConsumable(String itemID, int uses, Stats stats, int damage, int healing) : base(itemID)
+    public DItemConsumable(String itemID, int uses, Stats stats, int damage = 0, int healing = 0) : base(itemID)
     {
         this.stats = stats;
         this.uses = uses;

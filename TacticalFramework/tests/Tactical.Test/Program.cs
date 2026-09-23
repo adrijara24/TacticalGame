@@ -22,6 +22,7 @@ Weapon C = new Weapon("AxeTest", test2, Weapon.WeaponType.AXE);
 Weapon D = new Weapon("ScytheTest", test2, Weapon.WeaponType.SCYTHE);
 
 Unit myObj = new Unit("HorseRider#1", horseClass, A);
+myObj.Inventory[1] = new DItemConsumable("POTION#1", 3, new Stats());
 myObj.Stats.Log();
 
 Console.WriteLine(Weapon.HasAdvantage(A, B));
@@ -45,3 +46,8 @@ Console.WriteLine(Weapon.HasAdvantage(D, B));
 Console.WriteLine(Weapon.HasAdvantage(D, C));
 Console.WriteLine();
 
+Console.WriteLine("Inventory: ");
+for (int i = 0; i < 5; ++i)
+{
+    Console.WriteLine(myObj.Inventory[i] is not null ? myObj.Inventory[i].ID : "NO ITEM");
+}
