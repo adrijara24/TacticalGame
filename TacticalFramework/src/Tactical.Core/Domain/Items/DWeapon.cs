@@ -1,6 +1,8 @@
 using System.Text.Json;
+using Tactical.Core.Domain.Units;
+using Tactical.Core.Persistence;
 
-namespace Tactical.Core.Domain.Units;
+namespace Tactical.Core.Domain.Items;
 
 public class Weapon : DItem, IPersistent
 {

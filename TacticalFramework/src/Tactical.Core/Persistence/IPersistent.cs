@@ -1,4 +1,4 @@
-namespace Tactical.Core.Domain;
+namespace Tactical.Core.Persistence;
 
 using System.Text.Json;
 

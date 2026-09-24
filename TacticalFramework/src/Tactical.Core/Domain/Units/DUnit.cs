@@ -1,55 +1,45 @@
 using System.Text.Json;
+using Tactical.Core.Persistence;
 
 namespace Tactical.Core.Domain.Units;
 
-public class Unit : IPersistent
+public class DUnit : IPersistent
 {
-    private DClass unitClass;
-    private Weapon weapon;
+    private String unitClass;
 
     private int lives;
 
-    private Stats aggregatedStats;
-
     private String unitID;
 
-    private DInventory inventory;
+    private String[] inventory;
+
+    private Stats baseStats;
 
     public String ID => unitID;
 
-    public Stats Stats
-    {
-        get => aggregatedStats;
-    }
-
-    public Weapon Weapon
-    {
-        get => weapon;
-        set
-        {
-            weapon = value;
-            UpdateStats();
-        }
-    }
-
-    public DInventory Inventory
+    public String[] Inventory
     {
         get { return inventory; }
     }
 
-    public void UpdateStats()
+    public Stats Stats => baseStats;
+
+    public DUnit()
     {
-        aggregatedStats = unitClass.Stats + weapon.Stats;
+        this.unitID = "";
+        this.unitClass = "";
+        this.baseStats = new Stats();
+        this.lives = 0;
+        this.inventory = new String[5];
     }
 
-    public Unit(String unitID, DClass unitClass, Weapon weapon)
+    public DUnit(String unitID, Stats baseStats, String unitClass)
     {
         this.unitID = unitID;
         this.unitClass = unitClass;
-        this.weapon = weapon;
+        this.baseStats = baseStats;
         this.lives = 0;
-        this.inventory = new DInventory(5);
-        UpdateStats();
+        this.inventory = new String[5];
     }
 
     public void FromJson(JsonElement json)

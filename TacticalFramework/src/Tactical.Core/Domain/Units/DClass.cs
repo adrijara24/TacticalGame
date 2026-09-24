@@ -1,6 +1,7 @@
 using Tactical.Core.Domain.Units;
-using Tactical.Core.Domain;
 using System.Text.Json;
+using Tactical.Core.Domain.Items;
+using Tactical.Core.Persistence;
 
 public class DClass : IPersistent
 {

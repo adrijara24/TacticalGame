@@ -1,5 +1,5 @@
-using Tactical.Core.Domain;
 using System.Text.Json;
+using Tactical.Core.Persistence;
 public class DItem : IPersistent
 {
     private String itemID;

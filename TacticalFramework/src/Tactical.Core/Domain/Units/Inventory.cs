@@ -6,7 +6,7 @@ using System.Text.Json;
 
 namespace Tactical.Core.Domain.Units
 {
-    public class DInventory : IPersistent
+    public class Inventory
     {
         List<DItem?> items;  // We work with fixed inventories, so no resizing or need to add ADD or REMOVE operations. If a 
 
@@ -29,22 +29,13 @@ namespace Tactical.Core.Domain.Units
             }
         }
 
-        public DInventory(int inventorySize)
+        public Inventory(int inventorySize)
         {
             this.inventorySize = inventorySize;
             this.items = new List<DItem?>();
 
             for (int i = 0; i < inventorySize; i++)
                 this.items.Add(null);
-        }
-        public void FromJson(JsonElement json)
-        {
-            throw new NotImplementedException();
-        }
-
-        public JsonElement ToJson()
-        {
-            throw new NotImplementedException();
         }
     }
 }

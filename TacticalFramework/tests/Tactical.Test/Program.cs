@@ -1,4 +1,5 @@
-﻿using Tactical.Core.Domain.Units;
+﻿using Tactical.Core.Domain.Items;
+using Tactical.Core.Domain.Units;
 
 Stats test1 = new Stats();
 test1.hp = 10;
@@ -21,8 +22,8 @@ Weapon B = new Weapon("SpearTest", test2, Weapon.WeaponType.SPEAR);
 Weapon C = new Weapon("AxeTest", test2, Weapon.WeaponType.AXE);
 Weapon D = new Weapon("ScytheTest", test2, Weapon.WeaponType.SCYTHE);
 
-Unit myObj = new Unit("HorseRider#1", horseClass, A);
-myObj.Inventory[1] = new DItemConsumable("POTION#1", 3, new Stats());
+DUnit myObj = new DUnit("HorseRider#1", test1, "Horse");
+myObj.Inventory[1] = "POTION#1";
 myObj.Stats.Log();
 
 Console.WriteLine(Weapon.HasAdvantage(A, B));
@@ -49,5 +50,5 @@ Console.WriteLine();
 Console.WriteLine("Inventory: ");
 for (int i = 0; i < 5; ++i)
 {
-    Console.WriteLine(myObj.Inventory[i] is not null ? myObj.Inventory[i].ID : "NO ITEM");
+    Console.WriteLine(myObj.Inventory[i] is not null ? myObj.Inventory[i] : "NO ITEM");
 }

@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Tactical.Core.Domain.Units;
+using Tactical.Core.Persistence;
 
 namespace Tactical.Core.Domain.Terrain;
 

@@ -1,6 +1,6 @@
 using Tactical.Core.Domain.Units;
-using Tactical.Core.Domain;
 using System.Text.Json;
+using Tactical.Core.Persistence;
 
 public class DItemConsumable : DItem, IPersistent
 {
