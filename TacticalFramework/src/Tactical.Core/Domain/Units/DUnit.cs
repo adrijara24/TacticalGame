@@ -1,9 +1,9 @@
-using System.Text.Json;
+using System.Text.Json.Nodes;
 using Tactical.Core.Persistence;
 
 namespace Tactical.Core.Domain.Units;
 
-public class DUnit : IPersistent
+public class DUnit : IAsset
 {
     private String unitClass;
 
@@ -42,12 +42,12 @@ public class DUnit : IPersistent
         this.inventory = new String[5];
     }
 
-    public void FromJson(JsonElement json)
+    public void FromJson(JsonObject json)
     {
         throw new NotImplementedException();
     }
 
-    public JsonElement ToJson()
+    public JsonObject ToJson()
     {
         throw new NotImplementedException();
     }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Text.Json;
+using System.Text.Json.Nodes;
 using Tactical.Core.Persistence;
 
 namespace Tactical.Core.Domain.Units
@@ -46,7 +46,7 @@ namespace Tactical.Core.Domain.Units
         }
     }
 
-    class DEffect : IPersistent
+    class DEffect : IAsset
     {
         String effectID;
         EEffectDuration duration;
@@ -82,12 +82,12 @@ namespace Tactical.Core.Domain.Units
             }
         }
 
-        public JsonElement ToJson()
+        public JsonObject ToJson()
         {
             throw new NotImplementedException();
         }
 
-        public void FromJson(JsonElement json)
+        public void FromJson(JsonObject json)
         {
             throw new NotImplementedException();
         }

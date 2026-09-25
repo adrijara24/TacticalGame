@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace Tactical.Core.Domain.Items
 {
@@ -11,12 +11,12 @@ namespace Tactical.Core.Domain.Items
         {
         }
 
-        public new void FromJson(JsonElement json)
+        public new void FromJson(JsonObject json)
         {
             throw new NotImplementedException();
         }
 
-        public new JsonElement ToJson()
+        public new JsonObject ToJson()
         {
             throw new NotImplementedException();
         }

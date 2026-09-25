@@ -1,10 +1,10 @@
-using System.Text.Json;
+using System.Text.Json.Nodes;
 using Tactical.Core.Persistence;
 
 namespace Tactical.Core.Domain.Terrain;
 
 
-public class Map : IPersistent
+public class Map : IAsset
 {
     private Tile[,] tiles;
     private String mapName;
@@ -39,6 +39,8 @@ public class Map : IPersistent
         set => mapName = value;
     }
 
+    public string ID => throw new NotImplementedException();
+
     public Tile this[int x, int y]
     {
         get => GetTile(x, y);
@@ -57,12 +59,12 @@ public class Map : IPersistent
         return tiles[x, y];
     }
 
-    public JsonElement ToJson()
+    public JsonObject ToJson()
     {
         throw new NotImplementedException();
     }
 
-    public void FromJson(JsonElement json)
+    public void FromJson(JsonObject json)
     {
         throw new NotImplementedException();
     }

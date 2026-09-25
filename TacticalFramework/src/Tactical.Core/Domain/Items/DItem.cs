@@ -1,6 +1,7 @@
-using System.Text.Json;
-using Tactical.Core.Persistence;
-public class DItem : IPersistent
+using System.Text.Json.Nodes;
+using Tactical.Core;
+
+public class DItem : IAsset
 {
     private String itemID;
 
@@ -11,12 +12,12 @@ public class DItem : IPersistent
         this.itemID = itemID;
     }
 
-    public void FromJson(JsonElement json)
+    public virtual void FromJson(JsonObject json)
     {
         throw new NotImplementedException();
     }
 
-    public JsonElement ToJson()
+    public virtual JsonObject ToJson()
     {
         throw new NotImplementedException();
     }

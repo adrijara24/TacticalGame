@@ -1,9 +1,10 @@
 using Tactical.Core.Domain.Units;
-using System.Text.Json;
+using System.Text.Json.Nodes;
 using Tactical.Core.Domain.Items;
 using Tactical.Core.Persistence;
+using Tactical.Core;
 
-public class DClass : IPersistent
+public class DClass : IAsset
 {
     Stats baseStats;
 
@@ -34,12 +35,12 @@ public class DClass : IPersistent
         this.movementType = movementType;
     }
 
-    public void FromJson(JsonElement json)
+    public void FromJson(JsonObject json)
     {
         throw new NotImplementedException();
     }
 
-    public JsonElement ToJson()
+    public JsonObject ToJson()
     {
         throw new NotImplementedException();
     }

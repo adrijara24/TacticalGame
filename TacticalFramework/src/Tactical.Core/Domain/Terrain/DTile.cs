@@ -1,10 +1,10 @@
-using System.Text.Json;
+using System.Text.Json.Nodes;
 using Tactical.Core.Domain.Units;
 using Tactical.Core.Persistence;
 
 namespace Tactical.Core.Domain.Terrain;
 
-public class Tile : IPersistent
+public class Tile : IAsset
 {
     public enum TerrainType
     {
@@ -47,17 +47,19 @@ public class Tile : IPersistent
 
     public int Damage => damage;
 
+    public string ID => throw new NotImplementedException();
+
     public bool IsPassableBy(DClass unitClass)
     {
         return (passableBy & (int)unitClass.MovementType) != 0;
     }
 
-    public JsonElement ToJson()
+    public JsonObject ToJson()
     {
         throw new NotImplementedException();
     }
 
-    public void FromJson(JsonElement json)
+    public void FromJson(JsonObject json)
     {
         throw new NotImplementedException();
     }

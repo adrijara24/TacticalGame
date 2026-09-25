@@ -1,4 +1,4 @@
-using System.Text.Json;
+using System.Text.Json.Nodes;
 using Tactical.Core.Persistence;
 
 namespace Tactical.Core.Domain.Units;
@@ -18,7 +18,7 @@ public struct Stats : IPersistent
     public int speed;
     public int criticalRate;
 
-    public void FromJson(JsonElement json)
+    public void FromJson(JsonObject json)
     {
         throw new NotImplementedException();
     }
@@ -39,7 +39,7 @@ public struct Stats : IPersistent
         Console.WriteLine("Critical Rate: " + criticalRate);
     }
 
-    public JsonElement ToJson()
+    public JsonObject ToJson()
     {
         throw new NotImplementedException();
     }

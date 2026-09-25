@@ -1,4 +1,5 @@
-﻿using Tactical.Core.Domain.Items;
+﻿using Tactical.Core;
+using Tactical.Core.Domain.Items;
 using Tactical.Core.Domain.Units;
 
 Stats test1 = new Stats();
@@ -51,4 +52,16 @@ Console.WriteLine("Inventory: ");
 for (int i = 0; i < 5; ++i)
 {
     Console.WriteLine(myObj.Inventory[i] is not null ? myObj.Inventory[i] : "NO ITEM");
+}
+Console.WriteLine();
+
+CampaignAssets assets = new CampaignAssets();
+assets.Add<DClass>(horseClass);
+assets.Add<DItem>(new DItem("TestItem2"));
+assets.Add<DUnit>(myObj);
+assets.Add<DItem>(new DItem("TestItem"));
+
+foreach (IAsset asset in assets.GetAllAssets())
+{
+    Console.WriteLine($"[{asset.GetType().Name}]: {asset.ID}");
 }

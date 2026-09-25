@@ -1,10 +1,10 @@
-using System.Text.Json;
+using System.Text.Json.Nodes;
 using Tactical.Core.Domain.Units;
 using Tactical.Core.Persistence;
 
 namespace Tactical.Core.Domain.Items;
 
-public class Weapon : DItem, IPersistent
+public class Weapon : DItem
 {
     Stats stats;
     public enum WeaponType
@@ -39,12 +39,12 @@ public class Weapon : DItem, IPersistent
         }
     }
 
-    public new JsonElement ToJson()
+    public new JsonObject ToJson()
     {
         throw new NotImplementedException();
     }
 
-    public new void FromJson(JsonElement json)
+    public new void FromJson(JsonObject json)
     {
         throw new NotImplementedException();
     }

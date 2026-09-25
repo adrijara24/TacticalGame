@@ -1,8 +1,8 @@
 using Tactical.Core.Domain.Units;
-using System.Text.Json;
+using System.Text.Json.Nodes;
 using Tactical.Core.Persistence;
 
-public class DItemConsumable : DItem, IPersistent
+public class DItemConsumable : DItem
 {
     Stats stats;
     int uses;
@@ -35,12 +35,12 @@ public class DItemConsumable : DItem, IPersistent
 
     public Stats Stats => stats;
 
-    public new void FromJson(JsonElement json)
+    public new void FromJson(JsonObject json)
     {
         throw new NotImplementedException();
     }
 
-    public new JsonElement ToJson()
+    public new JsonObject ToJson()
     {
         throw new NotImplementedException();
     }
