@@ -41,7 +41,23 @@ public struct Stats : IPersistent
 
     public JsonObject ToJson()
     {
-        throw new NotImplementedException();
+        JsonObject json = new JsonObject
+        {
+            { "HP", hp },
+            { "MP", mana },
+            { "STR", strength },
+            { "MAG", magic },
+            { "DEF", defense },
+            { "RES", magicDefense },
+            { "PRE", precision },
+            { "EVA", evasion },
+            { "MOV", movement },
+            { "RNG", range },
+            { "SPD", speed },
+            { "CRI", criticalRate }
+        };
+
+        return json;
     }
 
     public static Stats operator +(Stats A, Stats B)

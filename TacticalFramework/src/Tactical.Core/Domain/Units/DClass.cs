@@ -8,7 +8,7 @@ public class DClass : IAsset
 {
     Stats baseStats;
 
-    Weapon.WeaponType []weaponProficiency;      // Damage reduced for weapons that are not proficient
+    DWeapon.WeaponType []weaponProficiency;      // Damage reduced for weapons that are not proficient
 
     public enum EMovementType
     {
@@ -21,13 +21,13 @@ public class DClass : IAsset
 
     public Stats Stats => baseStats;
 
-    public Weapon.WeaponType[] WeaponProficiency => weaponProficiency;
+    public DWeapon.WeaponType[] WeaponProficiency => weaponProficiency;
 
     public EMovementType MovementType => movementType;
 
     public String ID => classID;
 
-    public DClass(String classID, Stats baseStats, Weapon.WeaponType[] weaponProficiency, EMovementType movementType)
+    public DClass(String classID, Stats baseStats, DWeapon.WeaponType[] weaponProficiency, EMovementType movementType)
     {
         this.classID = classID;
         this.baseStats = baseStats;
@@ -42,6 +42,14 @@ public class DClass : IAsset
 
     public JsonObject ToJson()
     {
-        throw new NotImplementedException();
+        JsonObject json = new JsonObject();
+        json.Add("ID", classID);
+        json.Add("BaseStats", baseStats.ToJson());
+        int wpr = 0;
+        foreach(DWeapon.WeaponType i in weaponProficiency)
+            wpr += (int)i;
+        json.Add("WeaponProficiency", wpr);
+        json.Add("MovementType", (int)movementType);
+        return json;
     }
 }

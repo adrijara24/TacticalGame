@@ -4,17 +4,17 @@ using Tactical.Core.Persistence;
 
 namespace Tactical.Core.Domain.Items;
 
-public class Weapon : DItem
+public class DWeapon : DItem
 {
     Stats stats;
     public enum WeaponType
     {
-        SWORD = 0, SPEAR, AXE, BOW, FISTS, STAFF, SCYTHE, NONE
+        SWORD = 1, SPEAR = 2, AXE = 4, BOW = 8, FISTS = 16, STAFF = 32, SCYTHE = 64, NONE = 0
     }
 
     WeaponType type;
 
-    public Weapon(String itemID, Stats stats, WeaponType type) : base(itemID)
+    public DWeapon(String itemID, Stats stats, WeaponType type) : base(itemID)
     {
         this.stats = stats;
         this.type = type;
@@ -24,7 +24,7 @@ public class Weapon : DItem
 
     public Stats Stats => stats;
 
-    public static bool HasAdvantage(Weapon A, Weapon B)
+    public static bool HasAdvantage(DWeapon A, DWeapon B)
     {
         switch (A.type)
         {
@@ -39,12 +39,16 @@ public class Weapon : DItem
         }
     }
 
-    public new JsonObject ToJson()
+    public override JsonObject ToJson()
     {
-        throw new NotImplementedException();
+        JsonObject json = new JsonObject();
+        json.Add("ID", ID);
+        json.Add("Stats", stats.ToJson());
+        json.Add("WeaponType", (int)type);
+        return json;
     }
 
-    public new void FromJson(JsonObject json)
+    public override void FromJson(JsonObject json)
     {
         throw new NotImplementedException();
     }

@@ -1,7 +1,7 @@
 using System.Text.Json.Nodes;
 using Tactical.Core;
 
-public class DItem : IAsset
+public abstract class DItem : IAsset
 {
     private String itemID;
 
