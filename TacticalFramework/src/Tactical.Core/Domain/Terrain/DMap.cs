@@ -7,7 +7,7 @@ namespace Tactical.Core.Domain.Terrain;
 public class Map : IAsset
 {
     private Tile[,] tiles;
-    private String mapName;
+    private string mapName;
 
     public Map(int width, int height)
     {

@@ -65,10 +65,27 @@ assets.Add<DItem>(new DWeapon("TestWeapon", new Stats(), DWeapon.WeaponType.SWOR
 foreach (IAsset asset in assets.GetAllAssets())
     Console.WriteLine($"[{asset.GetType().Name}]: {asset.ID}");
 
+DEffectAction action1 = new DEffectAction();
+action1.healing = 10;
+action1.trigger = EEffectTrigger.ONAPPLY;
+
+DEffectAction action2 = new DEffectAction();
+action2.healing = 2;
+action2.trigger = EEffectTrigger.ONTURNSTART;
+DEffectAction action3 = new DEffectAction();
+action3.stats.movement = 1;
+action3.trigger = EEffectTrigger.ONAPPLY;
+
+DEffect effect = new DEffect("SmallHeal", EEffectDuration.TURNS, 3, EEffectStacking.STACK, 2, [action1, action2, action3]);
+
+
 CampaignAssets assets2 = new CampaignAssets();
 assets2.Add<DClass>(horseClass);
+assets2.Add<DUnit>(myObj);
 assets2.Add<DWeapon>(A);
 assets2.Add<DWeapon>(B);
 assets2.Add<DWeapon>(C);
 assets2.Add<DWeapon>(D);
+assets2.Add<DItemConsumable>(new DItemConsumable("Potion#1", 3, "SmallHeal"));
+assets2.Add<DEffect>(effect);
 CampaignSerializer.SaveCampaign(assets2);

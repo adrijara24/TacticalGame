@@ -5,19 +5,19 @@ namespace Tactical.Core.Domain.Units;
 
 public class DUnit : IAsset
 {
-    private String unitClass;
+    private string unitClass;
 
     private int lives;
 
-    private String unitID;
+    private string unitID;
 
-    private String[] inventory;
+    private string[] inventory;
 
     private Stats baseStats;
 
-    public String ID => unitID;
+    public string ID => unitID;
 
-    public String[] Inventory
+    public string[] Inventory
     {
         get { return inventory; }
     }
@@ -30,16 +30,16 @@ public class DUnit : IAsset
         this.unitClass = "";
         this.baseStats = new Stats();
         this.lives = 0;
-        this.inventory = new String[5];
+        this.inventory = new string[5];
     }
 
-    public DUnit(String unitID, Stats baseStats, String unitClass)
+    public DUnit(string unitID, Stats baseStats, string unitClass)
     {
         this.unitID = unitID;
         this.unitClass = unitClass;
         this.baseStats = baseStats;
         this.lives = 0;
-        this.inventory = new String[5];
+        this.inventory = new string[5];
     }
 
     public void FromJson(JsonObject json)
@@ -49,6 +49,16 @@ public class DUnit : IAsset
 
     public JsonObject ToJson()
     {
-        throw new NotImplementedException();
+        JsonObject json = new JsonObject();
+        json.Add("ID", ID);
+        json.Add("ClassID", unitClass);
+        json.Add("Stats", baseStats.ToJson());
+        json.Add("Lives", lives);
+        JsonObject inv = new JsonObject();
+        for (int i = 0; i < inventory.Length; i++)
+            inv.Add("Item" + (i + 1), inventory[i] is not null ? inventory[i] : "NONE");
+        json.Add("Inventory", inv);
+
+        return json;
     }
 }

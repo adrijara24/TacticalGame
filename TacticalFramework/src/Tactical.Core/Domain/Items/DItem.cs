@@ -3,11 +3,11 @@ using Tactical.Core;
 
 public abstract class DItem : IAsset
 {
-    private String itemID;
+    private string itemID;
 
-    public String ID => itemID;
+    public string ID => itemID;
 
-    public DItem(String itemID)
+    public DItem(string itemID)
     {
         this.itemID = itemID;
     }

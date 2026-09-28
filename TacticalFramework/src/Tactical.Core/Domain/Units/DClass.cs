@@ -17,7 +17,7 @@ public class DClass : IAsset
 
     EMovementType movementType;
 
-    String classID;
+    string classID;
 
     public Stats Stats => baseStats;
 
@@ -25,9 +25,9 @@ public class DClass : IAsset
 
     public EMovementType MovementType => movementType;
 
-    public String ID => classID;
+    public string ID => classID;
 
-    public DClass(String classID, Stats baseStats, DWeapon.WeaponType[] weaponProficiency, EMovementType movementType)
+    public DClass(string classID, Stats baseStats, DWeapon.WeaponType[] weaponProficiency, EMovementType movementType)
     {
         this.classID = classID;
         this.baseStats = baseStats;

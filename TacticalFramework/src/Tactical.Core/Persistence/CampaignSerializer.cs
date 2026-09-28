@@ -46,6 +46,12 @@ namespace Tactical.Core.Persistence
                     case DWeapon:
                         folder = "Items";
                         break;
+                    case DItemConsumable:
+                        folder = "Items";
+                        break;
+                    case DEffect:
+                        folder = "Effects";
+                        break;
                     default:
                         folder = "Misc";
                         break;

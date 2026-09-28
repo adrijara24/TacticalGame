@@ -14,7 +14,7 @@ public class DWeapon : DItem
 
     WeaponType type;
 
-    public DWeapon(String itemID, Stats stats, WeaponType type) : base(itemID)
+    public DWeapon(string itemID, Stats stats, WeaponType type) : base(itemID)
     {
         this.stats = stats;
         this.type = type;

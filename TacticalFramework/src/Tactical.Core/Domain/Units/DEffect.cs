@@ -22,33 +22,33 @@ namespace Tactical.Core.Domain.Units
         ONAPPLY = 1, ONTURNSTART = 2, ONTURNEND = 4, ONEXPIRE = 8, ONEND = 16   // OnExpire is when it runs out naturally (Single,Turns). OnEND is any time it is removed
     }
 
-    class DEffectAction
+    public class DEffectAction
     {
         public EEffectTrigger trigger;
         public int damage;
         public int healing;
         public Stats stats;
 
-        public List<DEffect> addEffects;
-        public List<String> removeEffects;
+        public List<string> addEffects;
+        public List<string> removeEffects;
         
         public DEffectAction()
         {
-            this.addEffects = new List<DEffect>();
-            this.removeEffects = new List<String>();
+            this.addEffects = new List<string>();
+            this.removeEffects = new List<string>();
         }
 
         public DEffectAction(EEffectTrigger trigger)
         {
             this.trigger = trigger;
-            this.addEffects = new List<DEffect>();
-            this.removeEffects = new List<String>();
+            this.addEffects = new List<string>();
+            this.removeEffects = new List<string>();
         }
     }
 
-    class DEffect : IAsset
+    public class DEffect : IAsset
     {
-        String effectID;
+        string effectID;
         EEffectDuration duration;
         int turns;
 
@@ -59,11 +59,26 @@ namespace Tactical.Core.Domain.Units
 
         public DEffect()
         {
-            effectID = "";
+            this.effectID = "";
+            this.actions = new List<DEffectAction>();
+        }
+        public DEffect(string effectID)
+        {
+            this.effectID = effectID;
             this.actions = new List<DEffectAction>();
         }
 
-        public String ID => effectID;
+        public DEffect(string effectID, EEffectDuration duration, int maxTurns, EEffectStacking stacking, int maxStacks, DEffectAction[] actions)
+        {
+            this.effectID = effectID;
+            this.duration = duration;
+            this.turns = maxTurns;
+            this.stacking = stacking;
+            this.maxStacks = maxStacks;
+            this.actions = new List<DEffectAction>(actions);
+        }
+
+        public string ID => effectID;
 
         public EEffectDuration Duration => duration;
         public int Turns => turns;
@@ -84,7 +99,39 @@ namespace Tactical.Core.Domain.Units
 
         public JsonObject ToJson()
         {
-            throw new NotImplementedException();
+            JsonObject json = new JsonObject();
+            json.Add("ID", ID);
+            JsonObject durationData = new JsonObject();
+            durationData.Add("EffectDuration", (int)duration);
+            durationData.Add("Turns", turns);
+            
+            JsonObject stackingData = new JsonObject();
+            stackingData.Add("EffectStacking", (int)stacking);
+            stackingData.Add("MaxStacks", maxStacks);
+
+            JsonArray actionsJson = new JsonArray();
+            foreach (DEffectAction action in actions)
+            {
+                JsonObject acJson = new JsonObject();
+                acJson.Add("EffectTrigger", (int)action.trigger);
+                acJson.Add("Damage", action.damage);
+                acJson.Add("Healing", action.healing);
+                acJson.Add("Stats", action.stats.ToJson());
+                JsonArray addEffectsJson = new JsonArray();
+                foreach (string s in action.addEffects)
+                    addEffectsJson.Add(s);
+                JsonArray remEffectsJson = new JsonArray();
+                foreach (string s in action.removeEffects)
+                    remEffectsJson.Add(s);
+                acJson.Add("AddEffects", addEffectsJson);
+                acJson.Add("RemEffects", remEffectsJson);
+                actionsJson.Add(acJson);
+            }
+            json.Add("Duration", durationData);
+            json.Add("Stacking", stackingData);
+            json.Add("Actions", actionsJson);
+
+            return json;
         }
 
         public void FromJson(JsonObject json)

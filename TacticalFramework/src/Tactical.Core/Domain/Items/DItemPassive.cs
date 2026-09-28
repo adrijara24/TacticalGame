@@ -5,18 +5,19 @@ using System.Text.Json.Nodes;
 
 namespace Tactical.Core.Domain.Items
 {
+    [Obsolete("Out of scope for now", true)]
     class DItemPassive : DItem
     {
         public DItemPassive(string itemID) : base(itemID)
         {
         }
 
-        public new void FromJson(JsonObject json)
+        public override void FromJson(JsonObject json)
         {
             throw new NotImplementedException();
         }
 
-        public new JsonObject ToJson()
+        public override JsonObject ToJson()
         {
             throw new NotImplementedException();
         }

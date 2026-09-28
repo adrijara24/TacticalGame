@@ -4,44 +4,26 @@ using Tactical.Core.Persistence;
 
 public class DItemConsumable : DItem
 {
-    Stats stats;
+    string effectID;
     int uses;
-    int damage;
-    int healing;
 
-    public DItemConsumable(String itemID, int uses, Stats stats) : base(itemID)
+    public DItemConsumable(string itemID, int uses, string effect) : base(itemID)
     {
-        this.stats = stats;
+        this.effectID = effect;
         this.uses = uses;
-        this.damage = 0;
-        this.healing = 0;
     }
 
-    public DItemConsumable(String itemID, int uses, int damage, int healing) : base(itemID)
-    {
-        this.stats = new Stats();
-        this.uses = uses;
-        this.damage = damage;
-        this.healing = 0;
-    }
-
-    public DItemConsumable(String itemID, int uses, Stats stats, int damage = 0, int healing = 0) : base(itemID)
-    {
-        this.stats = stats;
-        this.uses = uses;
-        this.damage = damage;
-        this.healing = healing;
-    }
-
-    public Stats Stats => stats;
-
-    public new void FromJson(JsonObject json)
+    public override void FromJson(JsonObject json)
     {
         throw new NotImplementedException();
     }
 
-    public new JsonObject ToJson()
+    public override JsonObject ToJson()
     {
-        throw new NotImplementedException();
+        JsonObject json = new JsonObject();
+        json.Add("ID", ID);
+        json.Add("Uses", uses);
+        json.Add("Effect", effectID);
+        return json;
     }
 }
