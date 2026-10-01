@@ -3,7 +3,7 @@ using Tactical.Core;
 
 public abstract class DItem : IAsset
 {
-    private string itemID;
+    protected string itemID;
 
     public string ID => itemID;
 

@@ -7,6 +7,11 @@ public class DItemConsumable : DItem
     string effectID;
     int uses;
 
+    public DItemConsumable() : base("")
+    {
+        this.effectID = "";
+    }
+
     public DItemConsumable(string itemID, int uses, string effect) : base(itemID)
     {
         this.effectID = effect;
@@ -15,13 +20,16 @@ public class DItemConsumable : DItem
 
     public override void FromJson(JsonObject json)
     {
-        throw new NotImplementedException();
+        itemID = json["ID"]!.GetValue<string>();
+        uses = json["Uses"]!.GetValue<int>();
+        effectID = json["Effect"]!.GetValue<string>();
     }
 
     public override JsonObject ToJson()
     {
         JsonObject json = new JsonObject();
         json.Add("ID", ID);
+        json.Add("Type", "DItemConsumable");
         json.Add("Uses", uses);
         json.Add("Effect", effectID);
         return json;

@@ -12,7 +12,25 @@ public class DWeapon : DItem
         SWORD = 1, SPEAR = 2, AXE = 4, BOW = 8, FISTS = 16, STAFF = 32, SCYTHE = 64, NONE = 0
     }
 
+    public static WeaponType[] GetWeaponTypes(int data)
+    {
+        int val = data;
+        List<WeaponType> weapons = new List<WeaponType>();
+        for (int i = 0; i < 7 && val != 0; ++i)
+        {
+            if ((val & 0x01) != 0)
+                weapons.Add((WeaponType)(2 * (i + 1)));
+            val = (val >> 1);
+        }
+        return weapons.ToArray();
+    }
+
     WeaponType type;
+
+    public DWeapon() : base("")
+    {
+
+    }
 
     public DWeapon(string itemID, Stats stats, WeaponType type) : base(itemID)
     {
@@ -43,6 +61,7 @@ public class DWeapon : DItem
     {
         JsonObject json = new JsonObject();
         json.Add("ID", ID);
+        json.Add("Type", "DWeapon");
         json.Add("Stats", stats.ToJson());
         json.Add("WeaponType", (int)type);
         return json;
@@ -50,6 +69,8 @@ public class DWeapon : DItem
 
     public override void FromJson(JsonObject json)
     {
-        throw new NotImplementedException();
+        itemID = json["ID"]!.GetValue<string>();
+        stats.FromJson(json["Stats"]!.AsObject());
+        type = (WeaponType)json["WeaponType"]!.GetValue<int>();
     }
 }

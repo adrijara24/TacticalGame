@@ -88,4 +88,9 @@ assets2.Add<DWeapon>(C);
 assets2.Add<DWeapon>(D);
 assets2.Add<DItemConsumable>(new DItemConsumable("Potion#1", 3, "SmallHeal"));
 assets2.Add<DEffect>(effect);
-CampaignSerializer.SaveCampaign(assets2);
+CampaignSerializer.SaveCampaign("TestCampaign", assets2);
+
+CampaignAssets assets3 = CampaignSerializer.LoadCampaign("TestCampaign", "");
+Console.WriteLine("Printing loaded campaign from disk");
+foreach (IAsset asset in assets3.GetAllAssets())
+    Console.WriteLine($"[{asset.GetType().Name}]: {asset.ID}");

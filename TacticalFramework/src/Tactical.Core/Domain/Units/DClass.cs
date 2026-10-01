@@ -27,6 +27,13 @@ public class DClass : IAsset
 
     public string ID => classID;
 
+    public DClass()
+    {
+        this.classID = "";
+        this.weaponProficiency = new DWeapon.WeaponType[1];
+        weaponProficiency[0] = DWeapon.WeaponType.NONE;
+        movementType = EMovementType.GROUND;
+    }
     public DClass(string classID, Stats baseStats, DWeapon.WeaponType[] weaponProficiency, EMovementType movementType)
     {
         this.classID = classID;
@@ -37,7 +44,10 @@ public class DClass : IAsset
 
     public void FromJson(JsonObject json)
     {
-        throw new NotImplementedException();
+        classID = json["ID"]!.GetValue<string>();
+        baseStats.FromJson(json["BaseStats"]!.AsObject());
+        weaponProficiency = DWeapon.GetWeaponTypes(json["WeaponProficiency"]!.GetValue<int>());
+        movementType = (EMovementType)json["MovementType"]!.GetValue<int>();
     }
 
     public JsonObject ToJson()

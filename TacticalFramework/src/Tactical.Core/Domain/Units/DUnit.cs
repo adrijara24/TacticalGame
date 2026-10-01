@@ -31,6 +31,8 @@ public class DUnit : IAsset
         this.baseStats = new Stats();
         this.lives = 0;
         this.inventory = new string[5];
+        for (int i = 0; i < inventory.Length; ++i)
+            this.inventory[i] = "NONE";
     }
 
     public DUnit(string unitID, Stats baseStats, string unitClass)
@@ -40,11 +42,21 @@ public class DUnit : IAsset
         this.baseStats = baseStats;
         this.lives = 0;
         this.inventory = new string[5];
+        for (int i = 0; i < inventory.Length; ++i)
+            this.inventory[i] = "NONE";
     }
 
     public void FromJson(JsonObject json)
     {
-        throw new NotImplementedException();
+        unitID = json["ID"]!.GetValue<string>();
+        unitClass = json["ClassID"]!.GetValue<string>();
+        baseStats.FromJson(json["Stats"]!.AsObject());
+        lives = json["Lives"]!.GetValue<int>();
+
+        JsonObject inv = json["Inventory"]!.AsObject();
+
+        for (int i = 0; i < inventory.Length; i++)
+            inventory[i] = inv["Item" + (i + 1)]!.GetValue<string>();
     }
 
     public JsonObject ToJson()
@@ -56,7 +68,7 @@ public class DUnit : IAsset
         json.Add("Lives", lives);
         JsonObject inv = new JsonObject();
         for (int i = 0; i < inventory.Length; i++)
-            inv.Add("Item" + (i + 1), inventory[i] is not null ? inventory[i] : "NONE");
+            inv.Add("Item" + (i + 1), inventory[i]);
         json.Add("Inventory", inv);
 
         return json;

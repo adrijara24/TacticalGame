@@ -20,13 +20,24 @@ public struct Stats : IPersistent
 
     public void FromJson(JsonObject json)
     {
-        throw new NotImplementedException();
+        hp =            json["MHP"]!.GetValue<int>();
+        mana =          json["MMP"]!.GetValue<int>();
+        strength =      json["STR"]!.GetValue<int>();
+        magic =         json["MAG"]!.GetValue<int>();
+        defense =       json["DEF"]!.GetValue<int>();
+        magicDefense =  json["RES"]!.GetValue<int>();
+        precision =     json["PRE"]!.GetValue<int>();
+        evasion =       json["EVA"]!.GetValue<int>();
+        movement =      json["MOV"]!.GetValue<int>();
+        range =         json["RNG"]!.GetValue<int>();
+        speed =         json["SPD"]!.GetValue<int>();
+        criticalRate =  json["CRI"]!.GetValue<int>();
     }
 
     public void Log()
     {
-        Console.WriteLine("HP: " + hp);
-        Console.WriteLine("Mana: " + mana);
+        Console.WriteLine("Max HP: " + hp);
+        Console.WriteLine("Max Mana: " + mana);
         Console.WriteLine("Strength: " + strength);
         Console.WriteLine("Magic: " + magic);
         Console.WriteLine("Defense: " + defense);
@@ -43,8 +54,8 @@ public struct Stats : IPersistent
     {
         JsonObject json = new JsonObject
         {
-            { "HP", hp },
-            { "MP", mana },
+            { "MHP", hp },
+            { "MMP", mana },
             { "STR", strength },
             { "MAG", magic },
             { "DEF", defense },

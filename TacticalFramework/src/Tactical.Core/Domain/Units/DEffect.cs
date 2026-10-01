@@ -136,7 +136,36 @@ namespace Tactical.Core.Domain.Units
 
         public void FromJson(JsonObject json)
         {
-            throw new NotImplementedException();
+            effectID = json["ID"]!.GetValue<string>();
+
+            JsonObject durationData = json["Duration"]!.AsObject();
+            duration = (EEffectDuration)durationData["EffectDuration"]!.GetValue<int>();
+            turns = durationData["Turns"]!.GetValue<int>();
+
+            JsonObject stackingData = json["Stacking"]!.AsObject();
+            stacking = (EEffectStacking)stackingData["EffectStacking"]!.GetValue<int>();
+            maxStacks = stackingData["MaxStacks"]!.GetValue<int>();
+
+            actions.Clear();
+
+            foreach (JsonNode? node in json["Actions"]!.AsArray())
+            {
+                JsonObject actionJson = node!.AsObject();
+
+                DEffectAction action = new DEffectAction((EEffectTrigger)actionJson["EffectTrigger"]!.GetValue<int>());
+
+                action.damage = actionJson["Damage"]!.GetValue<int>();
+                action.healing = actionJson["Healing"]!.GetValue<int>();
+                action.stats.FromJson(actionJson["Stats"]!.AsObject());
+
+                foreach (JsonNode? effect in actionJson["AddEffects"]!.AsArray())
+                    action.addEffects.Add(effect!.GetValue<string>());
+
+                foreach (JsonNode? effect in actionJson["RemEffects"]!.AsArray())
+                    action.removeEffects.Add(effect!.GetValue<string>());
+
+                actions.Add(action);
+            }
         }
     }
 }

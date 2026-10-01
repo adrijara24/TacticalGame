@@ -25,9 +25,8 @@ namespace Tactical.Core.Persistence
 
         }
 
-        public static void SaveCampaign(CampaignAssets assets)
+        public static void SaveCampaign(string campaignName, CampaignAssets assets)
         {
-            string campaignName = "TestCampaign";
             string campaignRoute = Path.Combine(campaignName);
 
             JsonObject campaignIndex = new();
@@ -73,5 +72,72 @@ namespace Tactical.Core.Persistence
 
             SaveJson(Path.Combine(campaignRoute, "index.json"), campaignIndex);
         }
+        public static CampaignAssets LoadCampaign(string campaignName, string campaignRoute)
+        {
+            string campaignDirectory = Path.Combine(campaignRoute, campaignName);
+            string indexRoute = Path.Combine(campaignDirectory, "index.json");
+
+            if (!File.Exists(indexRoute))
+                throw new FileNotFoundException("Campaign index not found.", indexRoute);
+
+            JsonObject campaignIndex = JsonNode.Parse(File.ReadAllText(indexRoute))!.AsObject();
+
+            CampaignAssets assets = new();
+
+            foreach (KeyValuePair<string, JsonNode?> category in campaignIndex)
+            {
+                string folder = category.Key;
+                JsonObject files = category.Value!.AsObject();
+
+                foreach (KeyValuePair<string, JsonNode?> entry in files)
+                {
+                    string relativeRoute = entry.Value!.GetValue<string>();
+                    string assetRoute = Path.Combine(campaignDirectory, relativeRoute);
+
+                    if (!File.Exists(assetRoute))
+                        throw new FileNotFoundException($"Asset file for '{entry.Key}' not found.", assetRoute);
+
+                    JsonObject assetJson = JsonNode.Parse(File.ReadAllText(assetRoute))!.AsObject();
+
+                    IAsset asset;
+
+                    switch (folder)
+                    {
+                        case "Units":
+                            asset = new DUnit();
+                            break;
+
+                        case "Classes":
+                            asset = new DClass();
+                            break;
+
+                        case "Effects":
+                            asset = new DEffect();
+                            break;
+
+                        case "Items":
+                            string type = assetJson["Type"]!.GetValue<string>();
+
+                            asset = type switch
+                            {
+                                "DWeapon" => new DWeapon(),
+                                "DItemConsumable" => new DItemConsumable(),
+                                _ => throw new InvalidDataException($"Unknown item type '{type}' in '{assetRoute}'.")
+                            };
+                            break;
+
+                        default:
+                            throw new InvalidDataException($"Unknown asset category '{folder}'.");
+                    }
+
+                    asset.FromJson(assetJson);
+                    assets.Add(asset);
+                }
+            }
+
+            return assets;
+        }
+
     }
+
 }
