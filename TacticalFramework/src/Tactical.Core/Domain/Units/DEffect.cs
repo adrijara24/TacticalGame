@@ -25,8 +25,7 @@ namespace Tactical.Core.Domain.Units
     public class DEffectAction
     {
         public EEffectTrigger trigger;
-        public int damage;
-        public int healing;
+        public DamageDefinition? damageDefinition;
         public Stats stats;
 
         public List<string> addEffects;
@@ -114,8 +113,8 @@ namespace Tactical.Core.Domain.Units
             {
                 JsonObject acJson = new JsonObject();
                 acJson.Add("EffectTrigger", (int)action.trigger);
-                acJson.Add("Damage", action.damage);
-                acJson.Add("Healing", action.healing);
+                if (action.damageDefinition != null)
+                    acJson.Add("Damage", action.damageDefinition.ToJson());
                 acJson.Add("Stats", action.stats.ToJson());
                 JsonArray addEffectsJson = new JsonArray();
                 foreach (string s in action.addEffects)
@@ -154,8 +153,11 @@ namespace Tactical.Core.Domain.Units
 
                 DEffectAction action = new DEffectAction((EEffectTrigger)actionJson["EffectTrigger"]!.GetValue<int>());
 
-                action.damage = actionJson["Damage"]!.GetValue<int>();
-                action.healing = actionJson["Healing"]!.GetValue<int>();
+                if (actionJson["Damage"] != null)
+                {
+                    action.damageDefinition = new DamageDefinition();
+                    action.damageDefinition.FromJson(actionJson["Damage"]!.AsObject());
+                }
                 action.stats.FromJson(actionJson["Stats"]!.AsObject());
 
                 foreach (JsonNode? effect in actionJson["AddEffects"]!.AsArray())

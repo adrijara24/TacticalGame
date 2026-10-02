@@ -2,6 +2,7 @@
 using Tactical.Core.Domain.Items;
 using Tactical.Core.Domain.Units;
 using Tactical.Core.Persistence;
+using Tactical.Core.Domain;
 
 Stats test1 = new Stats();
 test1.hp = 10;
@@ -66,11 +67,11 @@ foreach (IAsset asset in assets.GetAllAssets())
     Console.WriteLine($"[{asset.GetType().Name}]: {asset.ID}");
 
 DEffectAction action1 = new DEffectAction();
-action1.healing = 10;
+action1.damageDefinition = new DamageDefinition("10", EDamageType.HEALING);
 action1.trigger = EEffectTrigger.ONAPPLY;
 
 DEffectAction action2 = new DEffectAction();
-action2.healing = 2;
+action2.damageDefinition = new DamageDefinition("2", EDamageType.HEALING);
 action2.trigger = EEffectTrigger.ONTURNSTART;
 DEffectAction action3 = new DEffectAction();
 action3.stats.movement = 1;
