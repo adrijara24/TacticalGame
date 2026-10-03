@@ -21,6 +21,8 @@ public class DItemConsumable : DItem
     public override void FromJson(JsonObject json)
     {
         itemID = json["ID"]!.GetValue<string>();
+        name = json["Name"]!.GetValue<string>();
+        description = json["Description"]!.GetValue<string>();
         uses = json["Uses"]!.GetValue<int>();
         effectID = json["Effect"]!.GetValue<string>();
     }
@@ -29,6 +31,8 @@ public class DItemConsumable : DItem
     {
         JsonObject json = new JsonObject();
         json.Add("ID", ID);
+        json.Add("Name", Name);
+        json.Add("Description", Description);
         json.Add("Type", "DItemConsumable");
         json.Add("Uses", uses);
         json.Add("Effect", effectID);

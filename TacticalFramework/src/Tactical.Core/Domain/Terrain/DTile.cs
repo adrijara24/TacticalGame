@@ -11,6 +11,9 @@ public class Tile : IAsset
         GRASS = 0, WATER, MOUNTAIN, FOREST, ROAD, NONE
     }
 
+    private string name;
+    private string description;
+
     TerrainType type;
 
     Stats bonusStats;
@@ -48,6 +51,10 @@ public class Tile : IAsset
     public int Damage => damage;
 
     public string ID => throw new NotImplementedException();
+
+    public string Name => throw new NotImplementedException();
+
+    public string Description => throw new NotImplementedException();
 
     public bool IsPassableBy(DClass unitClass)
     {

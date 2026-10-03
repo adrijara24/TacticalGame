@@ -1,4 +1,5 @@
 using System.Text.Json.Nodes;
+using System.Xml.Linq;
 using Tactical.Core.Persistence;
 
 namespace Tactical.Core.Domain.Units;
@@ -11,11 +12,17 @@ public class DUnit : IAsset
 
     private string unitID;
 
+    private string name;
+    private string description;
+
     private string[] inventory;
 
     private Stats baseStats;
 
     public string ID => unitID;
+
+    public string Name => name;
+    public string Description => description;
 
     public string[] Inventory
     {
@@ -27,6 +34,8 @@ public class DUnit : IAsset
     public DUnit()
     {
         this.unitID = "";
+        this.name = "";
+        this.description = "";
         this.unitClass = "";
         this.baseStats = new Stats();
         this.lives = 0;
@@ -38,6 +47,8 @@ public class DUnit : IAsset
     public DUnit(string unitID, Stats baseStats, string unitClass)
     {
         this.unitID = unitID;
+        this.name = "";
+        this.description = "";
         this.unitClass = unitClass;
         this.baseStats = baseStats;
         this.lives = 0;
@@ -49,6 +60,8 @@ public class DUnit : IAsset
     public void FromJson(JsonObject json)
     {
         unitID = json["ID"]!.GetValue<string>();
+        name = json["Name"]!.GetValue<string>();
+        description = json["Description"]!.GetValue<string>();
         unitClass = json["ClassID"]!.GetValue<string>();
         baseStats.FromJson(json["Stats"]!.AsObject());
         lives = json["Lives"]!.GetValue<int>();
@@ -63,6 +76,8 @@ public class DUnit : IAsset
     {
         JsonObject json = new JsonObject();
         json.Add("ID", ID);
+        json.Add("Name", Name);
+        json.Add("Description", Description);
         json.Add("ClassID", unitClass);
         json.Add("Stats", baseStats.ToJson());
         json.Add("Lives", lives);

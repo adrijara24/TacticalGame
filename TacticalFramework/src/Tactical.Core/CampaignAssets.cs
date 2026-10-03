@@ -15,6 +15,8 @@ namespace Tactical.Core
     public interface IAsset : IPersistent
     {
         string ID { get; }
+        string Name { get; }
+        string Description { get; }
     }
 
     public class CampaignAssets

@@ -3,11 +3,11 @@ using Tactical.Core.Persistence;
 
 namespace Tactical.Core.Domain.Terrain;
 
-
 public class Map : IAsset
 {
     private Tile[,] tiles;
     private string mapName;
+    private string description;
 
     public Map(int width, int height)
     {
@@ -40,6 +40,10 @@ public class Map : IAsset
     }
 
     public string ID => throw new NotImplementedException();
+
+    public string Name => throw new NotImplementedException();
+
+    public string Description => throw new NotImplementedException();
 
     public Tile this[int x, int y]
     {

@@ -51,6 +51,9 @@ namespace Tactical.Core.Persistence
                     case DEffect:
                         folder = "Effects";
                         break;
+                    case DAbility:
+                        folder = "Abilities";
+                        break;
                     default:
                         folder = "Misc";
                         break;
@@ -125,7 +128,9 @@ namespace Tactical.Core.Persistence
                                 _ => throw new InvalidDataException($"Unknown item type '{type}' in '{assetRoute}'.")
                             };
                             break;
-
+                        case "Abilities":
+                            asset = new DAbility();
+                            break;
                         default:
                             throw new InvalidDataException($"Unknown asset category '{folder}'.");
                     }

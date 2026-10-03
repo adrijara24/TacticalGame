@@ -9,7 +9,7 @@ public class DWeapon : DItem
     Stats stats;
     public enum WeaponType
     {
-        SWORD = 1, SPEAR = 2, AXE = 4, BOW = 8, FISTS = 16, STAFF = 32, SCYTHE = 64, NONE = 0
+        SWORD = 1, SPEAR = 2, AXE = 4, BOW = 8, FISTS = 16, STAFF = 32, SCYTHE = 64, DAGGER = 128, NONE = 0
     }
 
     public static WeaponType[] GetWeaponTypes(int data)
@@ -61,6 +61,8 @@ public class DWeapon : DItem
     {
         JsonObject json = new JsonObject();
         json.Add("ID", ID);
+        json.Add("Name", Name);
+        json.Add("Description", Description);
         json.Add("Type", "DWeapon");
         json.Add("Stats", stats.ToJson());
         json.Add("WeaponType", (int)type);
@@ -70,6 +72,8 @@ public class DWeapon : DItem
     public override void FromJson(JsonObject json)
     {
         itemID = json["ID"]!.GetValue<string>();
+        name = json["Name"]!.GetValue<string>();
+        description = json["Description"]!.GetValue<string>();
         stats.FromJson(json["Stats"]!.AsObject());
         type = (WeaponType)json["WeaponType"]!.GetValue<int>();
     }

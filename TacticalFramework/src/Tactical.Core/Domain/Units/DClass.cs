@@ -1,8 +1,9 @@
-using Tactical.Core.Domain.Units;
 using System.Text.Json.Nodes;
-using Tactical.Core.Domain.Items;
-using Tactical.Core.Persistence;
+using System.Xml.Linq;
 using Tactical.Core;
+using Tactical.Core.Domain.Items;
+using Tactical.Core.Domain.Units;
+using Tactical.Core.Persistence;
 
 public class DClass : IAsset
 {
@@ -19,6 +20,12 @@ public class DClass : IAsset
 
     string classID;
 
+    private string name;
+    private string description;
+
+    public string Name => name;
+    public string Description => description;
+
     public Stats Stats => baseStats;
 
     public DWeapon.WeaponType[] WeaponProficiency => weaponProficiency;
@@ -30,6 +37,8 @@ public class DClass : IAsset
     public DClass()
     {
         this.classID = "";
+        this.name = "";
+        this.description = "";
         this.weaponProficiency = new DWeapon.WeaponType[1];
         weaponProficiency[0] = DWeapon.WeaponType.NONE;
         movementType = EMovementType.GROUND;
@@ -37,6 +46,8 @@ public class DClass : IAsset
     public DClass(string classID, Stats baseStats, DWeapon.WeaponType[] weaponProficiency, EMovementType movementType)
     {
         this.classID = classID;
+        this.name = "";
+        this.description = "";
         this.baseStats = baseStats;
         this.weaponProficiency = weaponProficiency;
         this.movementType = movementType;
@@ -45,6 +56,8 @@ public class DClass : IAsset
     public void FromJson(JsonObject json)
     {
         classID = json["ID"]!.GetValue<string>();
+        name = json["Name"]!.GetValue<string>();
+        description = json["Description"]!.GetValue<string>();
         baseStats.FromJson(json["BaseStats"]!.AsObject());
         weaponProficiency = DWeapon.GetWeaponTypes(json["WeaponProficiency"]!.GetValue<int>());
         movementType = (EMovementType)json["MovementType"]!.GetValue<int>();
@@ -54,6 +67,8 @@ public class DClass : IAsset
     {
         JsonObject json = new JsonObject();
         json.Add("ID", classID);
+        json.Add("Name", Name);
+        json.Add("Description", Description);
         json.Add("BaseStats", baseStats.ToJson());
         int wpr = 0;
         foreach(DWeapon.WeaponType i in weaponProficiency)

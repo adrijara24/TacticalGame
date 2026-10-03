@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Text.Json.Nodes;
+using System.Xml.Linq;
 using Tactical.Core.Persistence;
 
 namespace Tactical.Core.Domain.Units
@@ -48,6 +49,9 @@ namespace Tactical.Core.Domain.Units
     public class DEffect : IAsset
     {
         string effectID;
+        private string name;
+        private string description;
+
         EEffectDuration duration;
         int turns;
 
@@ -59,17 +63,23 @@ namespace Tactical.Core.Domain.Units
         public DEffect()
         {
             this.effectID = "";
+            this.name = "";
+            this.description = "";
             this.actions = new List<DEffectAction>();
         }
         public DEffect(string effectID)
         {
             this.effectID = effectID;
+            this.name = "";
+            this.description = "";
             this.actions = new List<DEffectAction>();
         }
 
         public DEffect(string effectID, EEffectDuration duration, int maxTurns, EEffectStacking stacking, int maxStacks, DEffectAction[] actions)
         {
             this.effectID = effectID;
+            this.name = "";
+            this.description = "";
             this.duration = duration;
             this.turns = maxTurns;
             this.stacking = stacking;
@@ -79,6 +89,8 @@ namespace Tactical.Core.Domain.Units
 
         public string ID => effectID;
 
+        public string Name => name;
+        public string Description => description;
         public EEffectDuration Duration => duration;
         public int Turns => turns;
         public EEffectStacking Stacking => stacking;
@@ -100,6 +112,8 @@ namespace Tactical.Core.Domain.Units
         {
             JsonObject json = new JsonObject();
             json.Add("ID", ID);
+            json.Add("Name", Name);
+            json.Add("Description", Description);
             JsonObject durationData = new JsonObject();
             durationData.Add("EffectDuration", (int)duration);
             durationData.Add("Turns", turns);
@@ -136,6 +150,8 @@ namespace Tactical.Core.Domain.Units
         public void FromJson(JsonObject json)
         {
             effectID = json["ID"]!.GetValue<string>();
+            name = json["Name"]!.GetValue<string>();
+            description = json["Description"]!.GetValue<string>();
 
             JsonObject durationData = json["Duration"]!.AsObject();
             duration = (EEffectDuration)durationData["EffectDuration"]!.GetValue<int>();

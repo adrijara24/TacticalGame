@@ -3,6 +3,7 @@ using Tactical.Core.Domain.Items;
 using Tactical.Core.Domain.Units;
 using Tactical.Core.Persistence;
 using Tactical.Core.Domain;
+using System.Numerics;
 
 Stats test1 = new Stats();
 test1.hp = 10;
@@ -77,8 +78,29 @@ DEffectAction action3 = new DEffectAction();
 action3.stats.movement = 1;
 action3.trigger = EEffectTrigger.ONAPPLY;
 
+DEffectAction action4 = new DEffectAction();
+action4.damageDefinition = new DamageDefinition("3", EDamageType.PURE);
+action4.trigger = EEffectTrigger.ONTURNEND;
+
 DEffect effect = new DEffect("SmallHeal", EEffectDuration.TURNS, 3, EEffectStacking.STACK, 2, [action1, action2, action3]);
 
+DEffect burnEffect = new DEffect("Burn", EEffectDuration.TURNS, 2, EEffectStacking.REFRESH, 1, [action4]);
+
+DAbilityAction cleaveAction = new DAbilityAction(EAbilityTrigger.ONHIT);
+cleaveAction.damageDefinition = new DamageDefinition("5 + user.STR", EDamageType.PHYSICAL);
+cleaveAction.addEffects.Add("Bleed");
+DAbilityAction buffAction = new DAbilityAction(EAbilityTrigger.ONACTIVE);
+buffAction.stats.strength = 10;
+
+DAbility ability1 = new DAbility();
+ability1.abilityID = "Cleave";
+ability1.minRange = 1;
+ability1.maxRange = 1;
+ability1.target = EAbilityTarget.ENEMY;
+ability1.type = EAbilityType.PASSIVE;
+ability1.area = [new Vector3(-1, 0, 1), new Vector3(0, 0, 1), new Vector3(1, 0, 1)];
+ability1.actions.Add(cleaveAction);
+ability1.actions.Add(buffAction);
 
 CampaignAssets assets2 = new CampaignAssets();
 assets2.Add<DClass>(horseClass);
@@ -89,6 +111,8 @@ assets2.Add<DWeapon>(C);
 assets2.Add<DWeapon>(D);
 assets2.Add<DItemConsumable>(new DItemConsumable("Potion#1", 3, "SmallHeal"));
 assets2.Add<DEffect>(effect);
+assets2.Add<DEffect>(burnEffect);
+assets2.Add<DAbility>(ability1);
 CampaignSerializer.SaveCampaign("TestCampaign", assets2);
 
 CampaignAssets assets3 = CampaignSerializer.LoadCampaign("TestCampaign", "");
