@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using Tactical.Core.Domain;
 using Tactical.Core.Domain.Items;
 using Tactical.Core.Domain.Units;
 
@@ -53,6 +54,9 @@ namespace Tactical.Core.Persistence
                         break;
                     case DAbility:
                         folder = "Abilities";
+                        break;
+                    case DBattle:
+                        folder = "Battles";
                         break;
                     default:
                         folder = "Misc";
@@ -130,6 +134,9 @@ namespace Tactical.Core.Persistence
                             break;
                         case "Abilities":
                             asset = new DAbility();
+                            break;
+                        case "Battles":
+                            asset = new DBattle("");
                             break;
                         default:
                             throw new InvalidDataException($"Unknown asset category '{folder}'.");

@@ -102,6 +102,11 @@ ability1.area = [new Vector3(-1, 0, 1), new Vector3(0, 0, 1), new Vector3(1, 0, 
 ability1.actions.Add(cleaveAction);
 ability1.actions.Add(buffAction);
 
+DBattle battle = new DBattle("TestBattle");
+battle.mapID = "DefaultMap";
+battle.team1.Add(new KeyValuePair<string, Vector3>("HorseRider#1", new Vector3(1, 0, 1)));
+battle.team2.Add(new KeyValuePair<string, Vector3>("HorseRider#1", new Vector3(3, 0, 3)));
+
 CampaignAssets assets2 = new CampaignAssets();
 assets2.Add<DClass>(horseClass);
 assets2.Add<DUnit>(myObj);
@@ -113,6 +118,7 @@ assets2.Add<DItemConsumable>(new DItemConsumable("Potion#1", 3, "SmallHeal"));
 assets2.Add<DEffect>(effect);
 assets2.Add<DEffect>(burnEffect);
 assets2.Add<DAbility>(ability1);
+assets2.Add<DBattle>(battle);
 CampaignSerializer.SaveCampaign("TestCampaign", assets2);
 
 CampaignAssets assets3 = CampaignSerializer.LoadCampaign("TestCampaign", "");
