@@ -5,4 +5,5 @@
   <Folder Name="/tests/">
     <Project Path="tests/Tactical.Test/Tactical.Test.csproj" />
   </Folder>
+  <Project Path="Tactical.Editor/Tactical.Editor.csproj" Id="68cf4f10-618e-48cf-845b-c4503af8a2ad" />
 </Solution>
