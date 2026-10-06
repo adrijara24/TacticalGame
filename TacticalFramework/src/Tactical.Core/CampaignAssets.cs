@@ -48,6 +48,28 @@ namespace Tactical.Core
                     $"An asset in the {storageType.Name} group with ID '{asset.ID}' already exists.");
         }
 
+        public void Replace<T>(string originalID, T asset) where T : IAsset
+        {
+            ArgumentNullException.ThrowIfNull(asset);
+
+            Type storageType = GetStorageType(typeof(T));
+
+            if (!assets.TryGetValue(storageType, out var assetsOfType))
+                throw new KeyNotFoundException($"No assets of type {storageType.Name} have been registered.");
+
+            if (!assetsOfType.TryGetValue(originalID, out var originalAsset))
+                throw new KeyNotFoundException($"No asset with ID '{originalID}' exists.");
+
+            if (originalAsset is not T)
+                throw new InvalidCastException($"Asset '{originalID}' is a {originalAsset.GetType().Name}, not a {typeof(T).Name}.");
+
+            if (originalID != asset.ID && assetsOfType.ContainsKey(asset.ID))
+                throw new ArgumentException($"An asset in the {storageType.Name} group with ID '{asset.ID}' already exists.");
+
+            assetsOfType.Remove(originalID);
+            assetsOfType.Add(asset.ID, asset);
+        }
+
         public T ByTag<T>(string id) where T : IAsset
         {
             Type storageType = GetStorageType(typeof(T));

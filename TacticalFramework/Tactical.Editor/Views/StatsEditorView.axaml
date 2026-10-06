@@ -1,0 +1,52 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Tactical.Editor.ViewModels"
+             mc:Ignorable="d"
+             x:Class="Tactical.Editor.Views.StatsEditorView"
+             x:DataType="vm:StatsEditorViewModel">
+
+    <Grid ColumnDefinitions="120,110,120,110"
+          RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto"
+          ColumnSpacing="12"
+          RowSpacing="8">
+
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="Max HP" VerticalAlignment="Center" />
+        <NumericUpDown Grid.Row="0" Grid.Column="1" Value="{Binding Hp}" Minimum="-9999" Maximum="9999"/>
+
+        <TextBlock Grid.Row="0" Grid.Column="2" Text="Max Mana" VerticalAlignment="Center" />
+        <NumericUpDown Grid.Row="0" Grid.Column="3" Value="{Binding Mana}" Minimum="-9999" Maximum="9999" />
+
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="Strength" VerticalAlignment="Center" />
+        <NumericUpDown Grid.Row="1" Grid.Column="1" Value="{Binding Strength}" Minimum="-9999" Maximum="9999" />
+
+        <TextBlock Grid.Row="1" Grid.Column="2" Text="Magic" VerticalAlignment="Center" />
+        <NumericUpDown Grid.Row="1" Grid.Column="3" Value="{Binding Magic}" Minimum="-9999" Maximum="9999" />
+
+        <TextBlock Grid.Row="2" Grid.Column="0" Text="Defense" VerticalAlignment="Center" />
+        <NumericUpDown Grid.Row="2" Grid.Column="1" Value="{Binding Defense}" Minimum="-9999" Maximum="9999" />
+
+        <TextBlock Grid.Row="2" Grid.Column="2" Text="Magic Defense" VerticalAlignment="Center" />
+        <NumericUpDown Grid.Row="2" Grid.Column="3" Value="{Binding MagicDefense}" Minimum="-9999" Maximum="9999" />
+
+        <TextBlock Grid.Row="3" Grid.Column="0" Text="Precision" VerticalAlignment="Center" />
+        <NumericUpDown Grid.Row="3" Grid.Column="1" Value="{Binding Precision}" Minimum="-9999" Maximum="9999" />
+
+        <TextBlock Grid.Row="3" Grid.Column="2" Text="Evasion" VerticalAlignment="Center" />
+        <NumericUpDown Grid.Row="3" Grid.Column="3" Value="{Binding Evasion}" Minimum="-9999" Maximum="9999" />
+
+        <TextBlock Grid.Row="4" Grid.Column="0" Text="Movement" VerticalAlignment="Center" />
+        <NumericUpDown Grid.Row="4" Grid.Column="1" Value="{Binding Movement}" Minimum="-9999" Maximum="9999" />
+
+        <TextBlock Grid.Row="4" Grid.Column="2" Text="Range" VerticalAlignment="Center" />
+        <NumericUpDown Grid.Row="4" Grid.Column="3" Value="{Binding Range}" Minimum="-9999" Maximum="9999" />
+
+        <TextBlock Grid.Row="5" Grid.Column="0" Text="Speed" VerticalAlignment="Center" />
+        <NumericUpDown Grid.Row="5" Grid.Column="1" Value="{Binding Speed}" Minimum="-9999" Maximum="9999" />
+
+        <TextBlock Grid.Row="5" Grid.Column="2" Text="Critical Rate" VerticalAlignment="Center" />
+        <NumericUpDown Grid.Row="5" Grid.Column="3" Value="{Binding CriticalRate}" Minimum="-9999" Maximum="9999" />
+
+    </Grid>
+</UserControl>

@@ -114,12 +114,12 @@ assets2.Add<DWeapon>(A);
 assets2.Add<DWeapon>(B);
 assets2.Add<DWeapon>(C);
 assets2.Add<DWeapon>(D);
-assets2.Add<DItemConsumable>(new DItemConsumable("Potion#1", 3, "SmallHeal"));
+assets2.Add<DItemConsumable>(new DItemConsumable("Potion#1", "Potion", "A potion", 3, "SmallHeal"));
 assets2.Add<DEffect>(effect);
 assets2.Add<DEffect>(burnEffect);
 assets2.Add<DAbility>(ability1);
 assets2.Add<DBattle>(battle);
-CampaignSerializer.SaveCampaign("TestCampaign", assets2);
+CampaignSerializer.SaveCampaign("TestCampaign", "", assets2);
 
 CampaignAssets assets3 = CampaignSerializer.LoadCampaign("TestCampaign", "");
 Console.WriteLine("Printing loaded campaign from disk");

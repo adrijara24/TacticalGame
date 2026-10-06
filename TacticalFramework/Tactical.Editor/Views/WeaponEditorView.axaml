@@ -1,0 +1,95 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Tactical.Editor.ViewModels"
+             xmlns:views="using:Tactical.Editor.Views"
+             x:Class="Tactical.Editor.Views.WeaponEditorView"
+             x:DataType="vm:WeaponEditorViewModel">
+
+    <Grid RowDefinitions="Auto,*,Auto"
+          Margin="16,16,16,0"
+          RowSpacing="12">
+
+        <TextBlock Text="{Binding Title}"
+                   FontSize="24"
+                   FontWeight="Bold" />
+
+        <ScrollViewer Grid.Row="1"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
+
+            <StackPanel Spacing="12">
+
+                <Grid ColumnDefinitions="120,*"
+                      RowDefinitions="Auto,Auto,Auto"
+                      RowSpacing="8">
+
+                    <TextBlock Text="ID"
+                               VerticalAlignment="Center" />
+
+                    <TextBox Grid.Column="1"
+                             Text="{Binding Id}" />
+
+                    <TextBlock Grid.Row="1"
+                               Text="Name"
+                               VerticalAlignment="Center" />
+
+                    <TextBox Grid.Row="1"
+                             Grid.Column="1"
+                             Text="{Binding Name}" />
+
+                    <TextBlock Grid.Row="2"
+                               Text="Description"
+                               VerticalAlignment="Center" />
+
+                    <TextBox Grid.Row="2"
+                             Grid.Column="1"
+                             Text="{Binding Description}" />
+
+                </Grid>
+
+                <Grid ColumnDefinitions="120,*">
+
+                    <TextBlock Text="Weapon Type"
+                               VerticalAlignment="Center" />
+
+                    <ComboBox Grid.Column="1"
+                              ItemsSource="{Binding WeaponTypes}"
+                              SelectedItem="{Binding WeaponType}" />
+
+                </Grid>
+
+                <TextBlock Text="Stats"
+                           FontSize="18"
+                           FontWeight="Bold" />
+
+                <Border BorderThickness="1"
+                        Padding="12">
+
+                    <views:StatsEditorView DataContext="{Binding Stats}" />
+
+                </Border>
+
+            </StackPanel>
+
+        </ScrollViewer>
+
+        <StackPanel Grid.Row="2"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Spacing="8">
+
+            <TextBlock Text="{Binding ErrorMessage}"
+                       VerticalAlignment="Center"
+                       Margin="0,0,16,0" />
+
+            <Button Content="Cancel"
+                    Command="{Binding CancelCommand}" />
+
+            <Button Content="Save"
+                    Command="{Binding SaveCommand}" />
+
+        </StackPanel>
+
+    </Grid>
+
+</UserControl>

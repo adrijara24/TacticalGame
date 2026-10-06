@@ -3,20 +3,121 @@
         xmlns:vm="using:Tactical.Editor.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d"
+        d:DesignWidth="1200"
+        d:DesignHeight="700"
         x:Class="Tactical.Editor.Views.MainWindow"
         x:DataType="vm:MainViewModel"
-        Icon="/Assets/avalonia-logo.ico"
-        Title="Tactical.Editor">
+        Title="Tactical Editor"
+        Width="1200"
+        Height="700"
+        MinWidth="900"
+        MinHeight="500">
 
     <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:MainViewModel />
     </Design.DataContext>
 
-    <TextBox Text="{Binding Greeting}"
-             HorizontalAlignment="Center"
-             VerticalAlignment="Center" />
+    <Grid RowDefinitions="Auto,*,250,Auto">
+
+        <Menu Grid.Row="0">
+
+            <MenuItem Header="_File">
+                <MenuItem Header="_New Campaign"
+                          Click="NewCampaign_Click" />
+
+                <Separator />
+
+                <MenuItem Header="_Save Campaign"
+                          Click="SaveCampaign_Click" />
+
+                <MenuItem Header="_Load Campaign"
+                          Click="LoadCampaign_Click" />
+            </MenuItem>
+
+            <MenuItem Header="_Add">
+                <MenuItem Header="_Unit"
+                          Command="{Binding AddUnitCommand}" />
+
+                <MenuItem Header="_Class"
+                          Command="{Binding AddClassCommand}" />
+
+                <MenuItem Header="_Weapon"
+                          Command="{Binding AddWeaponCommand}" />
+
+                <MenuItem Header="_Consumable"
+                          Command="{Binding AddConsumableCommand}" />
+
+                <MenuItem Header="_Effect"
+                          Command="{Binding AddEffectCommand}" />
+
+                <MenuItem Header="_Ability"
+                          Command="{Binding AddAbilityCommand}" />
+
+                <MenuItem Header="_Battle"
+                          Command="{Binding AddBattleCommand}" />
+            </MenuItem>
+
+        </Menu>
+
+        <Border Grid.Row="1"
+                Padding="12,12,12,0">
+
+            <ContentControl Content="{Binding SelectedEditor}" />
+
+        </Border>
+
+        <Border Grid.Row="2"
+                BorderThickness="0,1,0,0"
+                Padding="8">
+
+            <Grid RowDefinitions="Auto,*">
+
+                <TextBlock Text="Assets"
+                           FontSize="18"
+                           FontWeight="Bold"
+                           Margin="4,0,0,8" />
+
+                <ListBox Grid.Row="1"
+                         ItemsSource="{Binding Assets}"
+                         SelectedItem="{Binding SelectedAsset, Mode=TwoWay}">
+
+                    <ListBox.ItemTemplate>
+
+                        <DataTemplate>
+
+                            <Grid ColumnDefinitions="180,220,*"
+                                  Margin="4">
+
+                                <TextBlock Grid.Column="0"
+                                           Text="{Binding Type}" />
+
+                                <TextBlock Grid.Column="1"
+                                           Text="{Binding ID}" />
+
+                                <TextBlock Grid.Column="2"
+                                           Text="{Binding Name}" />
+
+                            </Grid>
+
+                        </DataTemplate>
+
+                    </ListBox.ItemTemplate>
+
+                </ListBox>
+
+            </Grid>
+
+        </Border>
+
+        <Border Grid.Row="3"
+                BorderThickness="0,1,0,0"
+                Padding="6">
+
+            <TextBlock Text="{Binding StatusMessage}" />
+
+        </Border>
+
+    </Grid>
 
 </Window>

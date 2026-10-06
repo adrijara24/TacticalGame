@@ -26,9 +26,9 @@ namespace Tactical.Core.Persistence
 
         }
 
-        public static void SaveCampaign(string campaignName, CampaignAssets assets)
+        public static void SaveCampaign(string campaignName, string campaignRoute, CampaignAssets assets)
         {
-            string campaignRoute = Path.Combine(campaignName);
+            string campaignDirectory = Path.Combine(campaignRoute, campaignName);
 
             JsonObject campaignIndex = new();
 
@@ -64,7 +64,7 @@ namespace Tactical.Core.Persistence
                 }
 
                 string relativeRoute = Path.Combine(folder, asset.ID + ".json");
-                string route = Path.Combine(campaignRoute, relativeRoute);
+                string route = Path.Combine(campaignDirectory, relativeRoute);
 
                 SaveJson(route, asset.ToJson());
 
@@ -77,7 +77,7 @@ namespace Tactical.Core.Persistence
                 category[asset.ID] = relativeRoute.Replace('\\', '/');
             }
 
-            SaveJson(Path.Combine(campaignRoute, "index.json"), campaignIndex);
+            SaveJson(Path.Combine(campaignDirectory, "index.json"), campaignIndex);
         }
         public static CampaignAssets LoadCampaign(string campaignName, string campaignRoute)
         {

@@ -1,0 +1,36 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Tactical.Editor.Views.Dialogs.TextInputDialog"
+        Title="Enter Name"
+        Width="420"
+        Height="170"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False">
+
+    <Grid RowDefinitions="Auto,*,Auto"
+          Margin="16">
+
+        <TextBlock x:Name="PromptText"
+                   FontSize="16" />
+
+        <TextBox Grid.Row="1"
+                 x:Name="ValueTextBox"
+                 Margin="0,12,0,12" />
+
+        <StackPanel Grid.Row="2"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Spacing="8">
+
+            <Button Content="Cancel"
+                    Click="Cancel_Click" />
+
+            <Button Content="OK"
+                    IsDefault="True"
+                    Click="Ok_Click" />
+
+        </StackPanel>
+
+    </Grid>
+
+</Window>

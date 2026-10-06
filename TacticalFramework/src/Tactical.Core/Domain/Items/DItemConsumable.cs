@@ -12,9 +12,9 @@ public class DItemConsumable : DItem
         this.effectID = "";
     }
 
-    public DItemConsumable(string itemID, int uses, string effect) : base(itemID)
+    public DItemConsumable(string itemID, string name, string description, int uses, string effectID) : base(itemID, name, description)
     {
-        this.effectID = effect;
+        this.effectID = effectID;
         this.uses = uses;
     }
 

@@ -20,6 +20,14 @@ public abstract class DItem : IAsset
         this.description = "";
     }
 
+    protected DItem(string itemID, string name, string description)
+    {
+        this.itemID = itemID;
+        this.name = name;
+        this.description = description;
+    }
+
+
     public virtual void FromJson(JsonObject json)
     {
         throw new NotImplementedException();

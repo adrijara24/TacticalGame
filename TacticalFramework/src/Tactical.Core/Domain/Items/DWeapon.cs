@@ -16,7 +16,7 @@ public class DWeapon : DItem
     {
         int val = data;
         List<WeaponType> weapons = new List<WeaponType>();
-        for (int i = 0; i < 7 && val != 0; ++i)
+        for (int i = 0; i < 8 && val != 0; ++i)
         {
             if ((val & 0x01) != 0)
                 weapons.Add((WeaponType)(2 * (i + 1)));
@@ -33,6 +33,12 @@ public class DWeapon : DItem
     }
 
     public DWeapon(string itemID, Stats stats, WeaponType type) : base(itemID)
+    {
+        this.stats = stats;
+        this.type = type;
+    }
+
+    public DWeapon(string itemID, string name, string description, Stats stats, WeaponType type) : base(itemID, name, description)
     {
         this.stats = stats;
         this.type = type;
