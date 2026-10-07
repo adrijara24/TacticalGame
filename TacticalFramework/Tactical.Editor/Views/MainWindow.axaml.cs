@@ -59,6 +59,31 @@ public partial class MainWindow : Window
         }
     }
 
+    private async void SaveCampaignAs_Click(object? sender, RoutedEventArgs e)
+    {
+        var folders = await StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions { Title = "Select campaign parent folder", AllowMultiple = false });
+
+        if (folders.Count == 0)
+            return;
+
+        string campaignRoute = folders[0].Path.LocalPath;
+
+        var dialog = new TextInputDialog("Save Campaign As", "Campaign name:");
+        string? result = await dialog.ShowDialog<string?>(this);
+
+        if (string.IsNullOrWhiteSpace(result))
+            return;
+
+        try
+        {
+            ViewModel.SaveCampaign(result.Trim(), campaignRoute);
+        }
+        catch (Exception ex)
+        {
+            ViewModel.StatusMessage = $"Save failed: {ex.Message}";
+        }
+    }
+
     private async void LoadCampaign_Click(object? sender, RoutedEventArgs e)
     {
         var folders = await StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions { Title = "Select campaign folder", AllowMultiple = false });

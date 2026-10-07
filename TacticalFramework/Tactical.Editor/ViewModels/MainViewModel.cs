@@ -32,6 +32,8 @@ public partial class MainViewModel : ViewModelBase
 
     public ObservableCollection<AssetItemViewModel> Assets { get; } = new();
 
+    public CampaignAssets CampaignAssets => campaignAssets;
+
     public MainViewModel()
     {
         campaignAssets = new CampaignAssets();
@@ -53,9 +55,15 @@ public partial class MainViewModel : ViewModelBase
                 break;
 
             case DItemConsumable consumable:
-                SelectedEditor = null;
-                StatusMessage = $"{value.Type} editor is not implemented yet.";
-                //SelectedEditor = new ConsumableEditorViewModel(this, consumable);
+                SelectedEditor = new ConsumableEditorViewModel(this, consumable);
+                break;
+
+            case DClass @class:
+                SelectedEditor = new ClassEditorViewModel(this, @class);
+                break;
+
+            case DUnit unit:
+                SelectedEditor = new UnitEditorViewModel(this, unit);
                 break;
 
             default:
@@ -86,7 +94,12 @@ public partial class MainViewModel : ViewModelBase
 
     public void LoadCampaign(CampaignAssets assets, string campaignName, string campaignRoute)
     {
-        campaignAssets = assets;
+        CampaignAssets normalizedAssets = new CampaignAssets();
+
+        foreach (IAsset asset in assets.GetAllAssets())
+            AddAssetTyped(normalizedAssets, asset);
+
+        campaignAssets = normalizedAssets;
         CurrentCampaignName = campaignName;
         CurrentCampaignRoute = campaignRoute;
         SelectedAsset = null;
@@ -109,17 +122,23 @@ public partial class MainViewModel : ViewModelBase
         {
             if (original == null)
             {
-                if (campaignAssets.Contains<IAsset>(asset.ID))
+                if (ContainsAssetId(asset.ID))
                 {
                     editor.ErrorMessage = $"An asset with ID '{asset.ID}' already exists.";
                     return;
                 }
 
-                campaignAssets.Add(asset);
+                AddAssetTyped(campaignAssets, asset);
             }
             else
             {
-                campaignAssets.Replace<IAsset>(original.ID, asset);
+                if (original.ID != asset.ID && ContainsAssetId(asset.ID))
+                {
+                    editor.ErrorMessage = $"An asset with ID '{asset.ID}' already exists.";
+                    return;
+                }
+
+                ReplaceAssetTyped(campaignAssets, original.ID, asset);
             }
         }
         catch (ArgumentException exception)
@@ -147,6 +166,91 @@ public partial class MainViewModel : ViewModelBase
         StatusMessage = "Changes discarded.";
     }
 
+    private static void AddAssetTyped(CampaignAssets assets, IAsset asset)
+    {
+        switch (asset)
+        {
+            case DUnit unit:
+                assets.Add(unit);
+                break;
+
+            case DClass @class:
+                assets.Add(@class);
+                break;
+
+            case DWeapon weapon:
+                assets.Add(weapon);
+                break;
+
+            case DItemConsumable consumable:
+                assets.Add(consumable);
+                break;
+
+            case DEffect effect:
+                assets.Add(effect);
+                break;
+
+            case DAbility ability:
+                assets.Add(ability);
+                break;
+
+            case DBattle battle:
+                assets.Add(battle);
+                break;
+
+            default:
+                throw new InvalidOperationException($"Unsupported asset type '{asset.GetType().Name}'.");
+        }
+    }
+
+    private static void ReplaceAssetTyped(CampaignAssets assets, string originalID, IAsset asset)
+    {
+        switch (asset)
+        {
+            case DUnit unit:
+                assets.Replace(originalID, unit);
+                break;
+
+            case DClass @class:
+                assets.Replace(originalID, @class);
+                break;
+
+            case DWeapon weapon:
+                assets.Replace(originalID, weapon);
+                break;
+
+            case DItemConsumable consumable:
+                assets.Replace(originalID, consumable);
+                break;
+
+            case DEffect effect:
+                assets.Replace(originalID, effect);
+                break;
+
+            case DAbility ability:
+                assets.Replace(originalID, ability);
+                break;
+
+            case DBattle battle:
+                assets.Replace(originalID, battle);
+                break;
+
+            default:
+                throw new InvalidOperationException($"Unsupported asset type '{asset.GetType().Name}'.");
+        }
+    }
+
+    private bool ContainsAssetId(string id)
+    {
+        foreach (IAsset asset in campaignAssets.GetAllAssets())
+        {
+            if (asset.ID == id)
+                return true;
+        }
+
+        return false;
+    }
+
     private void RefreshAssets()
     {
         Assets.Clear();
@@ -158,13 +262,17 @@ public partial class MainViewModel : ViewModelBase
     [RelayCommand]
     private void AddUnit()
     {
-        StatusMessage = "Unit creation is not implemented yet.";
+        SelectedAsset = null;
+        SelectedEditor = new UnitEditorViewModel(this);
+        StatusMessage = "Creating unit.";
     }
 
     [RelayCommand]
     private void AddClass()
     {
-        StatusMessage = "Class creation is not implemented yet.";
+        SelectedAsset = null;
+        SelectedEditor = new ClassEditorViewModel(this);
+        StatusMessage = "Creating class.";
     }
 
     [RelayCommand]
@@ -179,7 +287,7 @@ public partial class MainViewModel : ViewModelBase
     private void AddConsumable()
     {
         SelectedAsset = null;
-        //SelectedEditor = new ConsumableEditorViewModel(this);
+        SelectedEditor = new ConsumableEditorViewModel(this);
         StatusMessage = "Creating consumable.";
     }
 

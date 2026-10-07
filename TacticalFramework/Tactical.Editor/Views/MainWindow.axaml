@@ -31,6 +31,9 @@
                 <MenuItem Header="_Save Campaign"
                           Click="SaveCampaign_Click" />
 
+                <MenuItem Header="Save Campaign _As..."
+                          Click="SaveCampaignAs_Click" />
+
                 <MenuItem Header="_Load Campaign"
                           Click="LoadCampaign_Click" />
             </MenuItem>

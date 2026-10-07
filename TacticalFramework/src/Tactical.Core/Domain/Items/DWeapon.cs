@@ -19,7 +19,7 @@ public class DWeapon : DItem
         for (int i = 0; i < 8 && val != 0; ++i)
         {
             if ((val & 0x01) != 0)
-                weapons.Add((WeaponType)(2 * (i + 1)));
+                weapons.Add((WeaponType)(1 << i));
             val = (val >> 1);
         }
         return weapons.ToArray();

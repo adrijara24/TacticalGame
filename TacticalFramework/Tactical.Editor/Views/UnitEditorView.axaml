@@ -1,0 +1,138 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Tactical.Editor.ViewModels"
+             xmlns:views="using:Tactical.Editor.Views"
+             x:Class="Tactical.Editor.Views.UnitEditorView"
+             x:DataType="vm:UnitEditorViewModel">
+
+    <Grid RowDefinitions="Auto,*,Auto"
+          Margin="16,16,16,0"
+          RowSpacing="12">
+
+        <TextBlock Text="{Binding Title}"
+                   FontSize="24"
+                   FontWeight="Bold" />
+
+        <ScrollViewer Grid.Row="1"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
+
+            <StackPanel Spacing="12">
+
+                <Grid ColumnDefinitions="140,*"
+                      RowDefinitions="Auto,Auto,Auto,Auto"
+                      RowSpacing="8"
+                      ColumnSpacing="12">
+
+                    <TextBlock Text="ID"
+                               VerticalAlignment="Center" />
+
+                    <TextBox Grid.Column="1"
+                             Text="{Binding Id}" />
+
+                    <TextBlock Grid.Row="1"
+                               Text="Name"
+                               VerticalAlignment="Center" />
+
+                    <TextBox Grid.Row="1"
+                             Grid.Column="1"
+                             Text="{Binding Name}" />
+
+                    <TextBlock Grid.Row="2"
+                               Text="Description"
+                               VerticalAlignment="Center" />
+
+                    <TextBox Grid.Row="2"
+                             Grid.Column="1"
+                             Text="{Binding Description}"
+                             AcceptsReturn="True"
+                             TextWrapping="Wrap"
+                             MinHeight="70" />
+
+                    <TextBlock Grid.Row="3"
+                               Text="Lives"
+                               VerticalAlignment="Center" />
+
+                    <NumericUpDown Grid.Row="3"
+                                   Grid.Column="1"
+                                   Value="{Binding Lives}"
+                                   Minimum="0"
+                                   Maximum="9999" />
+
+                </Grid>
+
+                <Grid ColumnDefinitions="140,*"
+                      ColumnSpacing="12">
+
+                    <TextBlock Text="Class"
+                               VerticalAlignment="Center" />
+
+                    <views:AssetIdPickerView Grid.Column="1"
+                                             DataContext="{Binding ClassPicker}" />
+
+                </Grid>
+
+                <TextBlock Text="Inventory"
+                           FontSize="18"
+                           FontWeight="Bold" />
+
+                <Border BorderThickness="1"
+                        Padding="12">
+
+                    <ItemsControl ItemsSource="{Binding Inventory}">
+
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid ColumnDefinitions="80,*"
+                                      Margin="0,0,0,8"
+                                      ColumnSpacing="8">
+
+                                    <TextBlock Text="{Binding Label}"
+                                               VerticalAlignment="Center" />
+
+                                    <views:AssetIdPickerView Grid.Column="1"
+                                                             DataContext="{Binding Picker}" />
+
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+
+                    </ItemsControl>
+
+                </Border>
+
+                <TextBlock Text="Base Stats"
+                           FontSize="18"
+                           FontWeight="Bold" />
+
+                <Border BorderThickness="1"
+                        Padding="12">
+
+                    <views:StatsEditorView DataContext="{Binding Stats}" />
+
+                </Border>
+
+            </StackPanel>
+
+        </ScrollViewer>
+
+        <StackPanel Grid.Row="2"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Spacing="8">
+
+            <TextBlock Text="{Binding ErrorMessage}"
+                       VerticalAlignment="Center"
+                       Margin="0,0,16,0" />
+
+            <Button Content="Cancel"
+                    Command="{Binding CancelCommand}" />
+
+            <Button Content="Save"
+                    Command="{Binding SaveCommand}" />
+
+        </StackPanel>
+
+    </Grid>
+
+</UserControl>

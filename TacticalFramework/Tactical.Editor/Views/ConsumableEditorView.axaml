@@ -1,0 +1,55 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Tactical.Editor.ViewModels"
+             xmlns:views="using:Tactical.Editor.Views"
+             mc:Ignorable="d"
+             x:Class="Tactical.Editor.Views.ConsumableEditorView"
+             x:DataType="vm:ConsumableEditorViewModel">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="16" Spacing="12">
+            <TextBlock Text="{Binding Title}" FontSize="22" FontWeight="Bold" />
+
+            <Grid ColumnDefinitions="140,*"
+                  RowDefinitions="Auto,Auto,Auto,Auto,Auto"
+                  RowSpacing="8"
+                  ColumnSpacing="12">
+
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="ID" VerticalAlignment="Center" />
+                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Id}" />
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Name" VerticalAlignment="Center" />
+                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Name}" />
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Description" VerticalAlignment="Center" />
+                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Description}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="70" />
+
+                <TextBlock Grid.Row="3" Grid.Column="0" Text="Uses" VerticalAlignment="Center" />
+                <NumericUpDown Grid.Row="3" Grid.Column="1" Value="{Binding Uses}" Minimum="1" Maximum="9999" />
+
+                <TextBlock Grid.Row="4" Grid.Column="0" Text="Effect ID" VerticalAlignment="Center" />
+                <views:AssetIdPickerView Grid.Row="4" Grid.Column="1" DataContext="{Binding EffectPicker}" />
+            </Grid>
+
+            <TextBlock Text="{Binding ErrorMessage}" Foreground="Red" TextWrapping="Wrap" />
+
+            <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Spacing="8">
+
+                <TextBlock Text="{Binding ErrorMessage}"
+                           VerticalAlignment="Center"
+                           Margin="0,0,16,0" />
+
+                <Button Content="Cancel"
+                        Command="{Binding CancelCommand}" />
+
+                <Button Content="Save"
+                    Command="{Binding SaveCommand}" />
+
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

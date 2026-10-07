@@ -7,6 +7,9 @@ public class DItemConsumable : DItem
     string effectID;
     int uses;
 
+    public int Uses => uses;
+
+    public string Effect => effectID;
     public DItemConsumable() : base("")
     {
         this.effectID = "";
