@@ -66,6 +66,18 @@ public partial class MainViewModel : ViewModelBase
                 SelectedEditor = new UnitEditorViewModel(this, unit);
                 break;
 
+            case DEffect effect:
+                SelectedEditor = new EffectEditorViewModel(this, effect);
+                break;
+
+            case DAbility ability:
+                SelectedEditor = new AbilityEditorViewModel(this, ability);
+                break;
+
+            case DBattle battle:
+                SelectedEditor = new BattleEditorViewModel(this, battle);
+                break;
+
             default:
                 SelectedEditor = null;
                 StatusMessage = $"{value.Type} editor is not implemented yet.";
@@ -294,18 +306,42 @@ public partial class MainViewModel : ViewModelBase
     [RelayCommand]
     private void AddEffect()
     {
-        StatusMessage = "Effect creation is not implemented yet.";
+        SelectedAsset = null;
+        SelectedEditor = new EffectEditorViewModel(this);
+        StatusMessage = "Creating effect.";
     }
 
     [RelayCommand]
     private void AddAbility()
     {
-        StatusMessage = "Ability creation is not implemented yet.";
+        SelectedAsset = null;
+        SelectedEditor = new AbilityEditorViewModel(this);
+        StatusMessage = "Creating ability.";
     }
 
     [RelayCommand]
     private void AddBattle()
     {
-        StatusMessage = "Battle creation is not implemented yet.";
+        SelectedAsset = null;
+        SelectedEditor = new BattleEditorViewModel(this);
+        StatusMessage = "Creating battle.";
+    }
+
+    [RelayCommand]
+    private void AddMap()
+    {
+        StatusMessage = "Map creation is not implemented yet.";
+    }
+
+    [RelayCommand]
+    private void AddTile()
+    {
+        StatusMessage = "Tile creation is not implemented yet.";
+    }
+
+    [RelayCommand]
+    private void AddTerrainType()
+    {
+        StatusMessage = "Terrain type creation is not implemented yet.";
     }
 }

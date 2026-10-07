@@ -9,5 +9,9 @@
 
     <ComboBox ItemsSource="{Binding ResourceIds}"
               SelectedItem="{Binding SelectedId, Mode=TwoWay}"
+              Text="{Binding InputText, Mode=TwoWay}"
+              IsEditable="{Binding AllowCustomValue}"
+              MaxDropDownHeight="300"
               HorizontalAlignment="Stretch" />
+
 </UserControl>

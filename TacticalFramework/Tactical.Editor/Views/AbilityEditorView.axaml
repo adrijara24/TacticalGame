@@ -1,0 +1,195 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Tactical.Editor.ViewModels"
+             x:Class="Tactical.Editor.Views.AbilityEditorView"
+             x:DataType="vm:AbilityEditorViewModel">
+
+    <Grid RowDefinitions="Auto,*,Auto"
+          Margin="16,16,16,0"
+          RowSpacing="12">
+
+        <TextBlock Text="{Binding Title}"
+                   FontSize="24"
+                   FontWeight="Bold" />
+
+        <ScrollViewer Grid.Row="1"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
+
+            <StackPanel Spacing="12">
+
+                <Grid ColumnDefinitions="140,*"
+                      RowDefinitions="Auto,Auto,Auto,Auto"
+                      RowSpacing="8"
+                      ColumnSpacing="12">
+
+                    <TextBlock Text="ID"
+                               VerticalAlignment="Center" />
+
+                    <TextBox Grid.Column="1"
+                             Text="{Binding Id}" />
+
+                    <TextBlock Grid.Row="1"
+                               Text="Name"
+                               VerticalAlignment="Center" />
+
+                    <TextBox Grid.Row="1"
+                             Grid.Column="1"
+                             Text="{Binding Name}" />
+
+                    <TextBlock Grid.Row="2"
+                               Text="Description"
+                               VerticalAlignment="Center" />
+
+                    <TextBox Grid.Row="2"
+                             Grid.Column="1"
+                             Text="{Binding Description}"
+                             AcceptsReturn="True"
+                             TextWrapping="Wrap"
+                             MinHeight="70" />
+
+                    <TextBlock Grid.Row="3"
+                               Text="Ability Type"
+                               VerticalAlignment="Center" />
+
+                    <ComboBox Grid.Row="3"
+                              Grid.Column="1"
+                              ItemsSource="{Binding AbilityTypes}"
+                              SelectedItem="{Binding AbilityType}" />
+
+                </Grid>
+
+                <Grid ColumnDefinitions="140,*"
+                      RowDefinitions="Auto,Auto,Auto,Auto"
+                      RowSpacing="8"
+                      ColumnSpacing="12">
+
+                    <TextBlock Text="Mana Cost"
+                               VerticalAlignment="Center" />
+
+                    <NumericUpDown Grid.Column="1"
+                                   Value="{Binding ManaCost}"
+                                   Minimum="0"
+                                   Maximum="9999" />
+
+                    <TextBlock Grid.Row="1"
+                               Text="Min Range"
+                               VerticalAlignment="Center" />
+
+                    <NumericUpDown Grid.Row="1"
+                                   Grid.Column="1"
+                                   Value="{Binding MinRange}"
+                                   Minimum="0"
+                                   Maximum="9999" />
+
+                    <TextBlock Grid.Row="2"
+                               Text="Max Range"
+                               VerticalAlignment="Center" />
+
+                    <NumericUpDown Grid.Row="2"
+                                   Grid.Column="1"
+                                   Value="{Binding MaxRange}"
+                                   Minimum="0"
+                                   Maximum="9999" />
+
+                    <TextBlock Grid.Row="3"
+                               Text="Target"
+                               VerticalAlignment="Center" />
+
+                    <ComboBox Grid.Row="3"
+                              Grid.Column="1"
+                              ItemsSource="{Binding Targets}"
+                              SelectedItem="{Binding Target}" />
+
+                </Grid>
+
+                <Grid ColumnDefinitions="*,Auto">
+
+                    <TextBlock Text="Area"
+                               FontSize="18"
+                               FontWeight="Bold"
+                               VerticalAlignment="Center" />
+
+                    <Button Grid.Column="1"
+                            Content="Add Point"
+                            Command="{Binding AddAreaPointCommand}" />
+
+                </Grid>
+
+                <ItemsControl ItemsSource="{Binding Area}">
+
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+
+                            <Grid ColumnDefinitions="110,70,110,*"
+                                  ColumnSpacing="8"
+                                  Margin="0,0,0,6">
+
+                                <NumericUpDown Grid.Column="0"
+                                               Value="{Binding X}" />
+
+                                <NumericUpDown Grid.Column="1"
+                                               Value="{Binding Y}" />
+
+                                <NumericUpDown Grid.Column="2"
+                                               Value="{Binding Z}" />
+
+                                <Button Grid.Column="3"
+                                        Content="Remove"
+                                        HorizontalAlignment="Left"
+                                        Command="{Binding RemoveCommand}" />
+
+                            </Grid>
+
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+
+                </ItemsControl>
+
+                <Grid ColumnDefinitions="*,Auto">
+
+                    <TextBlock Text="Actions"
+                               FontSize="18"
+                               FontWeight="Bold"
+                               VerticalAlignment="Center" />
+
+                    <Button Grid.Column="1"
+                            Content="Add Action"
+                            Command="{Binding AddActionCommand}" />
+
+                </Grid>
+
+                <ItemsControl ItemsSource="{Binding Actions}">
+
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <ContentControl Content="{Binding}" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+
+                </ItemsControl>
+
+            </StackPanel>
+
+        </ScrollViewer>
+
+        <StackPanel Grid.Row="2"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Spacing="8">
+
+            <TextBlock Text="{Binding ErrorMessage}"
+                       VerticalAlignment="Center"
+                       Margin="0,0,16,0" />
+
+            <Button Content="Cancel"
+                    Command="{Binding CancelCommand}" />
+
+            <Button Content="Save"
+                    Command="{Binding SaveCommand}" />
+
+        </StackPanel>
+
+    </Grid>
+
+</UserControl>

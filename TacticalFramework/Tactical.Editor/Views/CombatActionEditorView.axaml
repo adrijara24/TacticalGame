@@ -1,0 +1,138 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Tactical.Editor.ViewModels"
+             xmlns:views="using:Tactical.Editor.Views"
+             x:Class="Tactical.Editor.Views.CombatActionEditorView"
+             x:DataType="vm:CombatActionEditorViewModel">
+
+    <Border BorderThickness="1"
+            Padding="12">
+
+        <StackPanel Spacing="10">
+
+            <Grid ColumnDefinitions="140,*"
+                  ColumnSpacing="12">
+
+                <TextBlock Text="Trigger"
+                           VerticalAlignment="Center" />
+
+                <ComboBox Grid.Column="1"
+                          ItemsSource="{Binding TriggerOptions}"
+                          SelectedItem="{Binding Trigger}" />
+
+            </Grid>
+
+            <CheckBox Content="Apply Damage"
+                      IsVisible="{Binding DamageOptional}"
+                      IsChecked="{Binding HasDamage}" />
+
+            <Border BorderThickness="1"
+                    Padding="10"
+                    IsVisible="{Binding HasDamage}">
+
+                <StackPanel Spacing="8">
+
+                    <TextBlock Text="Damage"
+                               FontSize="16"
+                               FontWeight="Bold" />
+
+                    <views:DamageDefinitionEditorView DataContext="{Binding Damage}" />
+
+                </StackPanel>
+
+            </Border>
+
+            <TextBlock Text="Stat Changes"
+                       FontSize="16"
+                       FontWeight="Bold" />
+
+            <Border BorderThickness="1"
+                    Padding="10">
+
+                <views:StatsEditorView DataContext="{Binding Stats}" />
+
+            </Border>
+
+            <Grid ColumnDefinitions="*,Auto">
+
+                <TextBlock Text="Add Effects"
+                           FontSize="16"
+                           FontWeight="Bold"
+                           VerticalAlignment="Center" />
+
+                <Button Grid.Column="1"
+                        Content="Add"
+                        Command="{Binding AddAddEffectCommand}" />
+
+            </Grid>
+
+            <ItemsControl ItemsSource="{Binding AddEffects}">
+
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+
+                        <Grid ColumnDefinitions="*,Auto"
+                              ColumnSpacing="8"
+                              Margin="0,0,0,6">
+
+                            <views:AssetIdPickerView DataContext="{Binding Picker}" />
+
+                            <Button Grid.Column="1"
+                                    Content="Remove"
+                                    Command="{Binding RemoveCommand}" />
+
+                        </Grid>
+
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+
+            </ItemsControl>
+
+            <Grid ColumnDefinitions="*,Auto">
+
+                <TextBlock Text="Remove Effects"
+                           FontSize="16"
+                           FontWeight="Bold"
+                           VerticalAlignment="Center" />
+
+                <Button Grid.Column="1"
+                        Content="Add"
+                        Command="{Binding AddRemoveEffectCommand}" />
+
+            </Grid>
+
+            <TextBlock Text="Each entry is a pattern. For example, 'Fire' can match Fire, FireBall, FireStorm, etc."
+                       TextWrapping="Wrap"
+                       Opacity="0.7" />
+
+            <ItemsControl ItemsSource="{Binding RemoveEffects}">
+
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+
+                        <Grid ColumnDefinitions="*,Auto"
+                              ColumnSpacing="8"
+                              Margin="0,0,0,6">
+
+                            <views:AssetIdPickerView DataContext="{Binding Picker}" />
+
+                            <Button Grid.Column="1"
+                                    Content="Remove"
+                                    Command="{Binding RemoveCommand}" />
+
+                        </Grid>
+
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+
+            </ItemsControl>
+
+            <Button Content="Remove Action"
+                    HorizontalAlignment="Left"
+                    Command="{Binding RemoveCommand}" />
+
+        </StackPanel>
+
+    </Border>
+
+</UserControl>

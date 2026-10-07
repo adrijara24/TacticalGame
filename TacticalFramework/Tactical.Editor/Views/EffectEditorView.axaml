@@ -1,0 +1,144 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Tactical.Editor.ViewModels"
+             x:Class="Tactical.Editor.Views.EffectEditorView"
+             x:DataType="vm:EffectEditorViewModel">
+
+    <Grid RowDefinitions="Auto,*,Auto"
+          Margin="16,16,16,0"
+          RowSpacing="12">
+
+        <TextBlock Text="{Binding Title}"
+                   FontSize="24"
+                   FontWeight="Bold" />
+
+        <ScrollViewer Grid.Row="1"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
+
+            <StackPanel Spacing="12">
+
+                <Grid ColumnDefinitions="140,*"
+                      RowDefinitions="Auto,Auto,Auto"
+                      RowSpacing="8"
+                      ColumnSpacing="12">
+
+                    <TextBlock Text="ID"
+                               VerticalAlignment="Center" />
+
+                    <TextBox Grid.Column="1"
+                             Text="{Binding Id}" />
+
+                    <TextBlock Grid.Row="1"
+                               Text="Name"
+                               VerticalAlignment="Center" />
+
+                    <TextBox Grid.Row="1"
+                             Grid.Column="1"
+                             Text="{Binding Name}" />
+
+                    <TextBlock Grid.Row="2"
+                               Text="Description"
+                               VerticalAlignment="Center" />
+
+                    <TextBox Grid.Row="2"
+                             Grid.Column="1"
+                             Text="{Binding Description}"
+                             AcceptsReturn="True"
+                             TextWrapping="Wrap"
+                             MinHeight="70" />
+
+                </Grid>
+
+                <Grid ColumnDefinitions="140,*"
+                      RowDefinitions="Auto,Auto,Auto"
+                      RowSpacing="8"
+                      ColumnSpacing="12">
+
+                    <TextBlock Text="Duration"
+                               VerticalAlignment="Center" />
+
+                    <ComboBox Grid.Column="1"
+                              ItemsSource="{Binding Durations}"
+                              SelectedItem="{Binding Duration}" />
+
+                    <TextBlock Grid.Row="1"
+                               Text="Turns"
+                               VerticalAlignment="Center" />
+
+                    <NumericUpDown Grid.Row="1"
+                                   Grid.Column="1"
+                                   Value="{Binding Turns}"
+                                   Minimum="0"
+                                   Maximum="9999" />
+
+                    <TextBlock Grid.Row="2"
+                               Text="Stacking"
+                               VerticalAlignment="Center" />
+
+                    <ComboBox Grid.Row="2"
+                              Grid.Column="1"
+                              ItemsSource="{Binding Stackings}"
+                              SelectedItem="{Binding Stacking}" />
+
+                </Grid>
+
+                <Grid ColumnDefinitions="140,*">
+
+                    <TextBlock Text="Max Stacks"
+                               VerticalAlignment="Center" />
+
+                    <NumericUpDown Grid.Column="1"
+                                   Value="{Binding MaxStacks}"
+                                   Minimum="1"
+                                   Maximum="9999" />
+
+                </Grid>
+
+                <Grid ColumnDefinitions="*,Auto">
+
+                    <TextBlock Text="Actions"
+                               FontSize="18"
+                               FontWeight="Bold"
+                               VerticalAlignment="Center" />
+
+                    <Button Grid.Column="1"
+                            Content="Add Action"
+                            Command="{Binding AddActionCommand}" />
+
+                </Grid>
+
+                <ItemsControl ItemsSource="{Binding Actions}">
+
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <ContentControl Content="{Binding}" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+
+                </ItemsControl>
+
+            </StackPanel>
+
+        </ScrollViewer>
+
+        <StackPanel Grid.Row="2"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Spacing="8">
+
+            <TextBlock Text="{Binding ErrorMessage}"
+                       VerticalAlignment="Center"
+                       Margin="0,0,16,0" />
+
+            <Button Content="Cancel"
+                    Command="{Binding CancelCommand}" />
+
+            <Button Content="Save"
+                    Command="{Binding SaveCommand}" />
+
+        </StackPanel>
+
+    </Grid>
+
+</UserControl>

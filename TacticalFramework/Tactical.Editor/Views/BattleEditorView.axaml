@@ -1,0 +1,223 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Tactical.Editor.ViewModels"
+             xmlns:views="using:Tactical.Editor.Views"
+             x:Class="Tactical.Editor.Views.BattleEditorView"
+             x:DataType="vm:BattleEditorViewModel">
+
+    <Grid RowDefinitions="Auto,*,Auto"
+          Margin="16,16,16,0"
+          RowSpacing="12">
+
+        <TextBlock Text="{Binding Title}"
+                   FontSize="24"
+                   FontWeight="Bold" />
+
+        <ScrollViewer Grid.Row="1"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
+
+            <StackPanel Spacing="12">
+
+                <Grid ColumnDefinitions="140,*"
+                      RowDefinitions="Auto,Auto,Auto,Auto"
+                      RowSpacing="8"
+                      ColumnSpacing="12">
+
+                    <TextBlock Text="ID"
+                               VerticalAlignment="Center" />
+
+                    <TextBox Grid.Column="1"
+                             Text="{Binding Id}" />
+
+                    <TextBlock Grid.Row="1"
+                               Text="Name"
+                               VerticalAlignment="Center" />
+
+                    <TextBox Grid.Row="1"
+                             Grid.Column="1"
+                             Text="{Binding Name}" />
+
+                    <TextBlock Grid.Row="2"
+                               Text="Description"
+                               VerticalAlignment="Center" />
+
+                    <TextBox Grid.Row="2"
+                             Grid.Column="1"
+                             Text="{Binding Description}"
+                             AcceptsReturn="True"
+                             TextWrapping="Wrap"
+                             MinHeight="70" />
+
+                    <TextBlock Grid.Row="3"
+                               Text="Map ID"
+                               VerticalAlignment="Center" />
+
+                    <TextBox Grid.Row="3"
+                             Grid.Column="1"
+                             Text="{Binding MapId}" />
+
+                </Grid>
+
+                <Grid ColumnDefinitions="*,Auto">
+
+                    <TextBlock Text="Team 1"
+                               FontSize="18"
+                               FontWeight="Bold"
+                               VerticalAlignment="Center" />
+
+                    <Button Grid.Column="1"
+                            Content="Add Unit"
+                            Command="{Binding AddTeam1UnitCommand}" />
+
+                </Grid>
+
+                <ItemsControl ItemsSource="{Binding Team1}">
+
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+
+                            <Border BorderThickness="1"
+                                    Padding="10"
+                                    Margin="0,0,0,6">
+
+                                <Grid RowDefinitions="Auto,Auto"
+                                      ColumnDefinitions="*,Auto"
+                                      RowSpacing="8"
+                                      ColumnSpacing="8">
+
+                                    <views:AssetIdPickerView DataContext="{Binding UnitPicker}" />
+
+                                    <Button Grid.Column="1"
+                                            Content="Remove"
+                                            Command="{Binding RemoveCommand}" />
+
+                                    <Grid Grid.Row="1"
+                                          Grid.ColumnSpan="2"
+                                          ColumnDefinitions="Auto,110,Auto,110,Auto,110"
+                                          ColumnSpacing="8">
+
+                                        <TextBlock Text="X"
+                                                   VerticalAlignment="Center" />
+
+                                        <NumericUpDown Grid.Column="1"
+                                                       Value="{Binding X}" />
+
+                                        <TextBlock Grid.Column="2"
+                                                   Text="Y"
+                                                   VerticalAlignment="Center" />
+
+                                        <NumericUpDown Grid.Column="3"
+                                                       Value="{Binding Y}" />
+
+                                        <TextBlock Grid.Column="4"
+                                                   Text="Z"
+                                                   VerticalAlignment="Center" />
+
+                                        <NumericUpDown Grid.Column="5"
+                                                       Value="{Binding Z}" />
+
+                                    </Grid>
+
+                                </Grid>
+
+                            </Border>
+
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+
+                </ItemsControl>
+
+                <Grid ColumnDefinitions="*,Auto">
+
+                    <TextBlock Text="Team 2"
+                               FontSize="18"
+                               FontWeight="Bold"
+                               VerticalAlignment="Center" />
+
+                    <Button Grid.Column="1"
+                            Content="Add Unit"
+                            Command="{Binding AddTeam2UnitCommand}" />
+
+                </Grid>
+
+                <ItemsControl ItemsSource="{Binding Team2}">
+
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+
+                            <Border BorderThickness="1"
+                                    Padding="10"
+                                    Margin="0,0,0,6">
+
+                                <Grid RowDefinitions="Auto,Auto"
+                                      ColumnDefinitions="*,Auto"
+                                      RowSpacing="8"
+                                      ColumnSpacing="8">
+
+                                    <views:AssetIdPickerView DataContext="{Binding UnitPicker}" />
+
+                                    <Button Grid.Column="1"
+                                            Content="Remove"
+                                            Command="{Binding RemoveCommand}" />
+
+                                    <Grid Grid.Row="1"
+                                          Grid.ColumnSpan="2"
+                                          ColumnDefinitions="Auto,110,Auto,110,Auto,110"
+                                          ColumnSpacing="8">
+
+                                        <TextBlock Text="X"
+                                                   VerticalAlignment="Center" />
+
+                                        <NumericUpDown Grid.Column="1"
+                                                       Value="{Binding X}" />
+
+                                        <TextBlock Grid.Column="2"
+                                                   Text="Y"
+                                                   VerticalAlignment="Center" />
+
+                                        <NumericUpDown Grid.Column="3"
+                                                       Value="{Binding Y}" />
+
+                                        <TextBlock Grid.Column="4"
+                                                   Text="Z"
+                                                   VerticalAlignment="Center" />
+
+                                        <NumericUpDown Grid.Column="5"
+                                                       Value="{Binding Z}" />
+
+                                    </Grid>
+
+                                </Grid>
+
+                            </Border>
+
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+
+                </ItemsControl>
+
+            </StackPanel>
+
+        </ScrollViewer>
+
+        <StackPanel Grid.Row="2"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Spacing="8">
+
+            <TextBlock Text="{Binding ErrorMessage}"
+                       VerticalAlignment="Center"
+                       Margin="0,0,16,0" />
+
+            <Button Content="Cancel"
+                    Command="{Binding CancelCommand}" />
+
+            <Button Content="Save"
+                    Command="{Binding SaveCommand}" />
+
+        </StackPanel>
+
+    </Grid>
+
+</UserControl>

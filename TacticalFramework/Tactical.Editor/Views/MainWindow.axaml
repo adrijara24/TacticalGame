@@ -59,6 +59,15 @@
 
                 <MenuItem Header="_Battle"
                           Command="{Binding AddBattleCommand}" />
+
+                <MenuItem Header="_Map"
+                          Command="{Binding AddMapCommand}" />
+
+                <MenuItem Header="_Tile"
+                          Command="{Binding AddTileCommand}" />
+
+                <MenuItem Header="_Terrain Type"
+                          Command="{Binding AddTerrainTypeCommand}" />
             </MenuItem>
 
         </Menu>
