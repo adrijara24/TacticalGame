@@ -4,57 +4,46 @@ using Tactical.Core.Persistence;
 
 namespace Tactical.Core.Domain.Terrain;
 
-public class Tile : IAsset
+public class DTile : IAsset
 {
-    public enum TerrainType
-    {
-        GRASS = 0, WATER, MOUNTAIN, FOREST, ROAD, NONE
-    }
-
+    string tileID;
     private string name;
     private string description;
 
-    TerrainType type;
-
-    Stats bonusStats;
+    Stats stats;
 
     int movementCost;
 
-    int damage;
-
     int passableBy;
 
-    public Tile(TerrainType type, Stats bonusStats, int movementCost, int damage)
-    {
-        this.type = type;
-        this.bonusStats = bonusStats;
-        this.movementCost = movementCost;
-        this.damage = damage;
-        this.passableBy = (int)(DClass.EMovementType.GROUND | DClass.EMovementType.FLYING | DClass.EMovementType.WATER);
-    }
+    string effectID;
 
-    public Tile(TerrainType type, Stats bonusStats, int movementCost, int damage, int passableBy)
+    public DTile() : this("", "", "", "") { }
+
+    public DTile(string tileID, string name, string description, string effectID, Stats stats = default, int movementCost = 1, int passableBy = (int)(DClass.EMovementType.GROUND | DClass.EMovementType.WATER | DClass.EMovementType.FLYING))
     {
-        this.type = type;
-        this.bonusStats = bonusStats;
+        this.tileID = tileID;
+        this.name = name;
+        this.description = description;
+        this.effectID = effectID;
+        this.stats = stats;
         this.movementCost = movementCost;
-        this.damage = damage;
         this.passableBy = passableBy;
     }
 
-    public TerrainType Type => type;
-
-    public Stats BonusStats => bonusStats;
+    public Stats Stats => stats;
 
     public int MovementCost => movementCost;
 
-    public int Damage => damage;
+    public int PassableBy => passableBy;
 
-    public string ID => throw new NotImplementedException();
+    public string Effect => effectID;
 
-    public string Name => throw new NotImplementedException();
+    public string ID => tileID;
 
-    public string Description => throw new NotImplementedException();
+    public string Name => name;
+
+    public string Description => description;
 
     public bool IsPassableBy(DClass unitClass)
     {
@@ -63,11 +52,39 @@ public class Tile : IAsset
 
     public JsonObject ToJson()
     {
-        throw new NotImplementedException();
+        JsonObject json = new JsonObject
+        {
+            ["ID"] = ID,
+            ["Name"] = Name,
+            ["Description"] = Description,
+            ["EffectID"] = Effect,
+            ["Stats"] = stats.ToJson(),
+            ["MovementCost"] = MovementCost,
+            ["PassableBy"] = PassableBy
+        };
+
+        return json;
     }
 
     public void FromJson(JsonObject json)
     {
-        throw new NotImplementedException();
+        tileID = json["ID"]!.GetValue<string>();
+        name = json["Name"]!.GetValue<string>();
+        description = json["Description"]!.GetValue<string>();
+        effectID = json["EffectID"]!.GetValue<string>() ?? "";
+
+        if (json["Stats"] is JsonObject statsJson)
+        {
+            Stats loadedStats = new Stats();
+            loadedStats.FromJson(statsJson);
+            stats = loadedStats;
+        }
+        else
+        {
+            stats = default;
+        }
+
+        movementCost = json["MovementCost"]!.GetValue<int>();
+        passableBy = json["PassableBy"]!.GetValue<int>();
     }
 }
