@@ -7,6 +7,7 @@ using Tactical.Core;
 using Tactical.Core.Domain;
 using Tactical.Core.Domain.Items;
 using Tactical.Core.Domain.Units;
+using Tactical.Core.Domain.Terrain;
 using Tactical.Core.Persistence;
 
 namespace Tactical.Editor.ViewModels;
@@ -78,6 +79,13 @@ public partial class MainViewModel : ViewModelBase
                 SelectedEditor = new BattleEditorViewModel(this, battle);
                 break;
 
+            case DMap map:
+                SelectedEditor = new MapEditorViewModel(this, map);
+                break;
+
+            case DTile tile:
+                SelectedEditor = new TileEditorViewModel(this, tile);
+                break;
             default:
                 SelectedEditor = null;
                 StatusMessage = $"{value.Type} editor is not implemented yet.";
@@ -210,6 +218,14 @@ public partial class MainViewModel : ViewModelBase
                 assets.Add(battle);
                 break;
 
+            case DMap map:
+                assets.Add(map);
+                break;
+
+            case DTile tile:
+                assets.Add(tile);
+                break;
+
             default:
                 throw new InvalidOperationException($"Unsupported asset type '{asset.GetType().Name}'.");
         }
@@ -245,6 +261,14 @@ public partial class MainViewModel : ViewModelBase
 
             case DBattle battle:
                 assets.Replace(originalID, battle);
+                break;
+
+            case DMap map:
+                assets.Replace(originalID, map);
+                break;
+
+            case DTile tile:
+                assets.Replace(originalID, tile);
                 break;
 
             default:
@@ -330,13 +354,17 @@ public partial class MainViewModel : ViewModelBase
     [RelayCommand]
     private void AddMap()
     {
-        StatusMessage = "Map creation is not implemented yet.";
+        SelectedAsset = null;
+        SelectedEditor = new MapEditorViewModel(this);
+        StatusMessage = "Creating map.";
     }
 
     [RelayCommand]
     private void AddTile()
     {
-        StatusMessage = "Tile creation is not implemented yet.";
+        SelectedAsset = null;
+        SelectedEditor = new TileEditorViewModel(this);
+        StatusMessage = "Creating tile.";
     }
 
     [RelayCommand]

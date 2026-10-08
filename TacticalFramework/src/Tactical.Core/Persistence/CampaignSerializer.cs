@@ -6,6 +6,7 @@ using System.Text.Json.Nodes;
 using Tactical.Core.Domain;
 using Tactical.Core.Domain.Items;
 using Tactical.Core.Domain.Units;
+using Tactical.Core.Domain.Terrain;
 
 namespace Tactical.Core.Persistence
 {
@@ -57,6 +58,12 @@ namespace Tactical.Core.Persistence
                         break;
                     case DBattle:
                         folder = "Battles";
+                        break;
+                    case DMap:
+                        folder = "Maps";
+                        break;
+                    case DTile:
+                        folder = "Tiles";
                         break;
                     default:
                         folder = "Misc";
@@ -137,6 +144,13 @@ namespace Tactical.Core.Persistence
                             break;
                         case "Battles":
                             asset = new DBattle("");
+                            break;
+                        case "Maps":
+                            asset = new DMap();
+                            break;
+
+                        case "Tiles":
+                            asset = new DTile();
                             break;
                         default:
                             throw new InvalidDataException($"Unknown asset category '{folder}'.");
