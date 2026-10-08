@@ -1,5 +1,5 @@
 <Solution>
-  <Project Path="src/Tactical.Core/Tactical.Core.csproj" />
+  <Project Path="Tactical.Core/Tactical.Core.csproj" />
   <Project Path="Tactical.Editor/Tactical.Editor.csproj" Id="68cf4f10-618e-48cf-845b-c4503af8a2ad" />
-  <Project Path="tests/Tactical.Test/Tactical.Test.csproj" />
+  <Project Path="Tactical.Test/Tactical.Test.csproj" />
 </Solution>
