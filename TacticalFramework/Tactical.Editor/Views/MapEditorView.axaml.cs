@@ -1,20 +1,29 @@
-﻿using Avalonia.Controls;
+﻿using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Input;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Avalonia.Interactivity;
+using Avalonia.VisualTree;
+using System.Threading.Tasks;
 using Tactical.Editor.ViewModels;
 
 namespace Tactical.Editor.Views
 {
     public partial class MapEditorView : UserControl
     {
-        private static readonly DataFormat<string> TileDragFormat =
-            DataFormat.CreateInProcessFormat<string>("tactical-editor-tile-id");
+        private static readonly DataFormat<string> TileDragFormat = DataFormat.CreateStringApplicationFormat("tactical-editor-tile");
+
+        private Border? dragOverBorder;
 
         public MapEditorView()
         {
             InitializeComponent();
+
+            AddHandler(InputElement.PointerPressedEvent, MapCell_PointerPressed, RoutingStrategies.Bubble);
+            AddHandler(InputElement.PointerPressedEvent, TilePaletteItem_PointerPressed, RoutingStrategies.Tunnel);
+
+            DragDrop.AddDragOverHandler(this, MapCell_DragOver);
+            DragDrop.AddDragLeaveHandler(this, MapCell_DragLeave);
+            DragDrop.AddDropHandler(this, MapCell_Drop);
         }
 
         private MapEditorViewModel? ViewModel => DataContext as MapEditorViewModel;
@@ -24,7 +33,9 @@ namespace Tactical.Editor.Views
             if (ViewModel == null)
                 return;
 
-            if (e.Source is not Control source || source.DataContext is not MapCellViewModel cell)
+            MapCellViewModel? cell = FindDataContext<MapCellViewModel>(e.Source);
+
+            if (cell == null)
                 return;
 
             if (!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
@@ -34,15 +45,57 @@ namespace Tactical.Editor.Views
             e.Handled = true;
         }
 
+        private void TilePaletteItem_PointerPressed(object? sender, PointerPressedEventArgs e)
+        {
+            TilePaletteItemViewModel? tile = FindDataContext<TilePaletteItemViewModel>(e.Source);
+
+            if (tile == null)
+                return;
+
+            if (!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+                return;
+
+            ViewModel?.SelectTile(tile.TileId);
+
+            _ = StartTileDrag(e, tile.TileId);
+        }
+
+        private async Task StartTileDrag(PointerPressedEventArgs e, string tileId)
+        {
+            DataTransfer dataTransfer = new DataTransfer();
+            dataTransfer.Add(DataTransferItem.Create(TileDragFormat, tileId));
+
+            await DragDrop.DoDragDropAsync(e, dataTransfer, DragDropEffects.Copy);
+        }
+
         private void MapCell_DragOver(object? sender, DragEventArgs e)
         {
-            if (e.DataTransfer.Contains(TileDragFormat))
+            MapCellViewModel? cell = FindDataContext<MapCellViewModel>(e.Source);
+            string? tileId = e.DataTransfer.TryGetValue(TileDragFormat);
+
+            if (cell == null || tileId == null)
             {
-                e.DragEffects = DragDropEffects.Copy;
+                e.DragEffects = DragDropEffects.None;
+                ClearDragOverCell();
                 return;
             }
 
-            e.DragEffects = DragDropEffects.None;
+            Border? border = FindParentBorder(e.Source);
+
+            if (border != null && border != dragOverBorder)
+            {
+                ClearDragOverCell();
+                border.Classes.Add("drop-target");
+                dragOverBorder = border;
+            }
+
+            e.DragEffects = DragDropEffects.Copy;
+            e.Handled = true;
+        }
+
+        private void MapCell_DragLeave(object? sender, RoutedEventArgs e)
+        {
+            ClearDragOverCell();
         }
 
         private void MapCell_Drop(object? sender, DragEventArgs e)
@@ -50,17 +103,13 @@ namespace Tactical.Editor.Views
             if (ViewModel == null)
                 return;
 
-            if (e.Source is not Control source || source.DataContext is not MapCellViewModel cell)
-            {
-                e.DragEffects = DragDropEffects.None;
-                return;
-            }
-
+            MapCellViewModel? cell = FindDataContext<MapCellViewModel>(e.Source);
             string? tileId = e.DataTransfer.TryGetValue(TileDragFormat);
 
-            if (tileId == null)
+            if (cell == null || tileId == null)
             {
                 e.DragEffects = DragDropEffects.None;
+                ClearDragOverCell();
                 return;
             }
 
@@ -69,24 +118,47 @@ namespace Tactical.Editor.Views
 
             e.DragEffects = DragDropEffects.Copy;
             e.Handled = true;
+
+            ClearDragOverCell();
         }
 
-        private async void TilePaletteItem_PointerPressed(object? sender, PointerPressedEventArgs e)
+        private void ClearDragOverCell()
         {
-            if (e.Source is not Control source || source.DataContext is not TilePaletteItemViewModel tile)
+            if (dragOverBorder == null)
                 return;
 
-            if (!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
-                return;
+            dragOverBorder.Classes.Remove("drop-target");
+            dragOverBorder = null;
+        }
 
-            ViewModel?.SelectTile(tile.TileId);
+        private static T? FindDataContext<T>(object? source) where T : class
+        {
+            Visual? visual = source as Visual;
 
-            DataTransfer dataTransfer = new DataTransfer();
-            dataTransfer.Add(DataTransferItem.Create(TileDragFormat, tile.TileId));
+            while (visual != null)
+            {
+                if (visual is Control control && control.DataContext is T result)
+                    return result;
 
-            await DragDrop.DoDragDropAsync(e, dataTransfer, DragDropEffects.Copy);
+                visual = visual.GetVisualParent<Visual>();
+            }
 
-            e.Handled = true;
+            return null;
+        }
+
+        private static Border? FindParentBorder(object? source)
+        {
+            Visual? visual = source as Visual;
+
+            while (visual != null)
+            {
+                if (visual is Border border)
+                    return border;
+
+                visual = visual.GetVisualParent<Visual>();
+            }
+
+            return null;
         }
     }
 }

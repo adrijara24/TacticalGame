@@ -2,14 +2,27 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:Tactical.Editor.ViewModels"
              x:Class="Tactical.Editor.Views.MapEditorView"
-             x:DataType="vm:MapEditorViewModel">
+             x:DataType="vm:MapEditorViewModel"
+             DragDrop.AllowDrop="True">
+
+    <UserControl.Styles>
+        <Style Selector="Border.map-cell.drop-target">
+            <Setter Property="BorderThickness"
+                    Value="3" />
+            <Setter Property="BorderBrush"
+                    Value="{DynamicResource SystemControlHighlightAccentBrush}" />
+            <Setter Property="Background"
+                    Value="{DynamicResource SystemControlHighlightAltListAccentLowBrush}" />
+        </Style>
+    </UserControl.Styles>
 
     <Grid RowDefinitions="Auto,*,Auto"
           Margin="16,16,16,0"
-          RowSpacing="12">
+          RowSpacing="10">
 
-        <Grid ColumnDefinitions="*,*,*,*,*"
-              ColumnSpacing="10">
+        <!-- Header -->
+        <Grid ColumnDefinitions="Auto,160,Auto,170,Auto,*,Auto,105,Auto,105"
+              ColumnSpacing="8">
 
             <TextBlock Grid.Column="0"
                        Text="ID"
@@ -20,40 +33,56 @@
 
             <TextBlock Grid.Column="2"
                        Text="Name"
-                       VerticalAlignment="Center" />
+                       VerticalAlignment="Center"
+                       Margin="12,0,0,0" />
 
             <TextBox Grid.Column="3"
                      Text="{Binding Name}" />
 
-            <Grid Grid.Column="4"
-                  ColumnDefinitions="Auto,70,Auto,70"
-                  ColumnSpacing="6">
+            <TextBlock Grid.Column="4"
+                       Text="Description"
+                       VerticalAlignment="Center"
+                       Margin="12,0,0,0" />
 
-                <TextBlock Text="W"
-                           VerticalAlignment="Center" />
+            <TextBox Grid.Column="5"
+                     Text="{Binding Description}"
+                     Watermark="Description"
+                     HorizontalAlignment="Stretch" />
 
-                <NumericUpDown Grid.Column="1"
-                               Value="{Binding Width}"
-                               Minimum="1"
-                               Maximum="500" />
+            <TextBlock Grid.Column="6"
+                       Text="W"
+                       VerticalAlignment="Center"
+                       Margin="12,0,0,0" />
 
-                <TextBlock Grid.Column="2"
-                           Text="H"
-                           VerticalAlignment="Center" />
+            <NumericUpDown Grid.Column="7"
+                           Value="{Binding Width, Mode=TwoWay}"
+                           Minimum="1"
+                           Maximum="500"
+                           FormatString="0"
+                           TextAlignment="Center"
+                           HorizontalContentAlignment="Center" />
 
-                <NumericUpDown Grid.Column="3"
-                               Value="{Binding Height}"
-                               Minimum="1"
-                               Maximum="500" />
+            <TextBlock Grid.Column="8"
+                       Text="H"
+                       VerticalAlignment="Center"
+                       Margin="8,0,0,0" />
 
-            </Grid>
+            <NumericUpDown Grid.Column="9"
+                           Value="{Binding Height, Mode=TwoWay}"
+                           Minimum="1"
+                           Maximum="500"
+                           FormatString="0"
+                           TextAlignment="Center"
+                           HorizontalContentAlignment="Center" />
 
         </Grid>
 
+        <!-- Map + Tile palette -->
         <Grid Grid.Row="1"
               ColumnDefinitions="3*,1*"
               ColumnSpacing="12">
 
+            <!-- Map -->
             <Border Grid.Column="0"
                     BorderThickness="1"
                     Padding="8">
@@ -61,18 +90,14 @@
                 <Grid RowDefinitions="Auto,*"
                       RowSpacing="8">
 
-                    <TextBlock Text="{Binding SelectedTileId}"
+                    <TextBlock Text="{Binding SelectedTileId, StringFormat='Selected: {0}'}"
                                Opacity="0.7" />
 
                     <ScrollViewer Grid.Row="1"
                                   HorizontalScrollBarVisibility="Auto"
                                   VerticalScrollBarVisibility="Auto">
 
-                        <ItemsControl ItemsSource="{Binding Cells}"
-                                      PointerPressed="MapCell_PointerPressed"
-                                      DragDrop.AllowDrop="True"
-                                      DragDrop.DragOver="MapCell_DragOver"
-                                      DragDrop.Drop="MapCell_Drop">
+                        <ItemsControl ItemsSource="{Binding Cells}">
 
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
@@ -85,9 +110,11 @@
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
 
-                                    <Border Width="76"
+                                    <Border Classes="map-cell"
+                                            Width="76"
                                             Height="76"
                                             BorderThickness="1"
+                                            BorderBrush="{DynamicResource SystemControlHighlightAltBaseLowBrush}"
                                             Padding="3"
                                             Background="Transparent"
                                             ToolTip.Tip="{Binding TileId}">
@@ -123,6 +150,7 @@
 
             </Border>
 
+            <!-- Tile palette -->
             <Border Grid.Column="1"
                     BorderThickness="1"
                     Padding="10">
@@ -139,8 +167,7 @@
                              Text="{Binding SearchText}" />
 
                     <ListBox Grid.Row="2"
-                             ItemsSource="{Binding VisibleTiles}"
-                             PointerPressed="TilePaletteItem_PointerPressed">
+                             ItemsSource="{Binding VisibleTiles}">
 
                         <ListBox.ItemTemplate>
                             <DataTemplate>
@@ -175,35 +202,23 @@
 
         </Grid>
 
-        <Grid Grid.Row="2"
-              RowDefinitions="Auto,Auto"
-              RowSpacing="8">
+        <!-- Save / Cancel -->
+        <StackPanel Grid.Row="2"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Spacing="8">
 
-            <TextBox Grid.Row="0"
-                     Text="{Binding Description}"
-                     Watermark="Description"
-                     AcceptsReturn="True"
-                     TextWrapping="Wrap"
-                     MinHeight="50" />
+            <TextBlock Text="{Binding ErrorMessage}"
+                       VerticalAlignment="Center"
+                       Margin="0,0,16,0" />
 
-            <StackPanel Grid.Row="1"
-                        Orientation="Horizontal"
-                        HorizontalAlignment="Right"
-                        Spacing="8">
+            <Button Content="Cancel"
+                    Command="{Binding CancelCommand}" />
 
-                <TextBlock Text="{Binding ErrorMessage}"
-                           VerticalAlignment="Center"
-                           Margin="0,0,16,0" />
+            <Button Content="Save"
+                    Command="{Binding SaveCommand}" />
 
-                <Button Content="Cancel"
-                        Command="{Binding CancelCommand}" />
-
-                <Button Content="Save"
-                        Command="{Binding SaveCommand}" />
-
-            </StackPanel>
-
-        </Grid>
+        </StackPanel>
 
     </Grid>
 
