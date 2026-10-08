@@ -1,5 +1,5 @@
 using System.Text.Json.Nodes;
-using Tactical.Core;
+using Tactical.Core.Persistence;
 
 public abstract class DItem : IAsset
 {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
 using System.Text.Json.Nodes;
+using Tactical.Core.Persistence;
 
 namespace Tactical.Core.Domain.Units
 {

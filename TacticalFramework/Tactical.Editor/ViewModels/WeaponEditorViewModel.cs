@@ -4,9 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Xml.Linq;
-using Tactical.Core;
 using Tactical.Core.Domain.Items;
 using Tactical.Core.Domain.Units;
+using Tactical.Core.Persistence;
 using static Tactical.Core.Domain.Items.DWeapon;
 
 namespace Tactical.Editor.ViewModels

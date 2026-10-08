@@ -6,8 +6,8 @@ using System.Collections.ObjectModel;
 using System.Text;
 using System.Text.Json.Nodes;
 using System.Xml.Linq;
-using Tactical.Core;
 using Tactical.Core.Domain.Units;
+using Tactical.Core.Persistence;
 
 namespace Tactical.Editor.ViewModels
 {

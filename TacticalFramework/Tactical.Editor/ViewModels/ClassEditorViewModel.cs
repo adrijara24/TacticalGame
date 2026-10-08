@@ -7,9 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Text.Json.Nodes;
 using System.Xml.Linq;
-using Tactical.Core;
 using Tactical.Core.Domain.Items;
 using Tactical.Core.Domain.Units;
+using Tactical.Core.Persistence;
 using static DClass;
 
 namespace Tactical.Editor.ViewModels

@@ -5,6 +5,7 @@ using System.Numerics;
 using System.Text;
 using System.Text.Json.Nodes;
 using System.Xml.Linq;
+using Tactical.Core.Persistence;
 
 namespace Tactical.Core.Domain
 {

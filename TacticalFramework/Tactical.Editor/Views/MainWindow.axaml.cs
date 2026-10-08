@@ -3,7 +3,6 @@ using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using System;
 using System.IO;
-using Tactical.Core;
 using Tactical.Core.Domain.Items;
 using Tactical.Core.Persistence;
 using Tactical.Editor.ViewModels;

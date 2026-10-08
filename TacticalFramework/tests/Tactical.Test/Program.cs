@@ -1,5 +1,4 @@
-﻿using Tactical.Core;
-using Tactical.Core.Domain.Items;
+﻿using Tactical.Core.Domain.Items;
 using Tactical.Core.Domain.Units;
 using Tactical.Core.Persistence;
 using Tactical.Core.Domain;

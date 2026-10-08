@@ -3,7 +3,6 @@ using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Tactical.Core;
 using Tactical.Core.Domain;
 using Tactical.Core.Domain.Items;
 using Tactical.Core.Domain.Units;

@@ -3,7 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Tactical.Core;
+using Tactical.Core.Persistence;
 
 namespace Tactical.Editor.ViewModels
 {

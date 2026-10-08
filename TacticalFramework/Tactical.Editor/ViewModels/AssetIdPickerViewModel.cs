@@ -6,7 +6,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using Tactical.Core;
+using Tactical.Core.Persistence;
 
 namespace Tactical.Editor.ViewModels
 {

@@ -5,10 +5,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
 using System.Xml.Linq;
-using Tactical.Core;
 using Tactical.Core.Domain.Terrain;
 using Tactical.Core.Domain.Units;
 using System.Linq;
+using Tactical.Core.Persistence;
 
 namespace Tactical.Editor.ViewModels
 {

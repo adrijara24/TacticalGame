@@ -1,6 +1,5 @@
 using System.Text.Json.Nodes;
 using System.Xml.Linq;
-using Tactical.Core;
 using Tactical.Core.Domain.Items;
 using Tactical.Core.Domain.Units;
 using Tactical.Core.Persistence;

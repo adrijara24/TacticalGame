@@ -5,8 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Xml.Linq;
-using Tactical.Core;
 using Tactical.Core.Domain.Units;
+using Tactical.Core.Persistence;
 
 namespace Tactical.Editor.ViewModels
 {

@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.Json.Nodes;
 using Tactical.Core.Domain.Units;
 using Tactical.Core.Domain.Units;
+using Tactical.Core.Persistence;
 
 namespace Tactical.Core.Domain.Terrain;
 
