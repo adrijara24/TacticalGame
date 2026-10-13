@@ -157,7 +157,47 @@ namespace Tactical.Core.Persistence
                     }
 
                     asset.FromJson(assetJson);
-                    assets.Add(asset);
+                    switch (asset)
+                    {
+                        case DUnit unit:
+                            assets.Add(unit);
+                            break;
+
+                        case DClass @class:
+                            assets.Add(@class);
+                            break;
+
+                        case DWeapon weapon:
+                            assets.Add(weapon);
+                            break;
+
+                        case DItemConsumable consumable:
+                            assets.Add(consumable);
+                            break;
+
+                        case DEffect effect:
+                            assets.Add(effect);
+                            break;
+
+                        case DAbility ability:
+                            assets.Add(ability);
+                            break;
+
+                        case DBattle battle:
+                            assets.Add(battle);
+                            break;
+
+                        case DMap map:
+                            assets.Add(map);
+                            break;
+
+                        case DTile tile:
+                            assets.Add(tile);
+                            break;
+
+                        default:
+                            throw new InvalidOperationException($"Unsupported asset type '{asset.GetType().Name}'.");
+                    }
                 }
             }
 

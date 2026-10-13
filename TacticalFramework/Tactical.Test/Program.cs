@@ -3,8 +3,9 @@ using Tactical.Core.Domain.Units;
 using Tactical.Core.Persistence;
 using Tactical.Core.Domain;
 using System.Numerics;
+using Tactical.Core.Systems;
 
-Stats test1 = new Stats();
+/*Stats test1 = new Stats();
 test1.hp = 10;
 test1.mana = 1;
 test1.strength = 5;
@@ -124,3 +125,33 @@ CampaignAssets assets3 = CampaignSerializer.LoadCampaign("TestCampaign", "");
 Console.WriteLine("Printing loaded campaign from disk");
 foreach (IAsset asset in assets3.GetAllAssets())
     Console.WriteLine($"[{asset.GetType().Name}]: {asset.ID}");
+*/
+
+
+internal class Program
+{
+    private static void Main(string[] args)
+    {
+        Console.WriteLine("Battle console. Type commands");
+
+        CampaignAssets campaign = CampaignSerializer.LoadCampaign("CommandTest", "C:\\Users\\shini\\Desktop\\UPC\\SLDS");
+        DBattle battle = campaign.ByTag<DBattle>("MovementTestBattle");
+        AssetManager.Instance.LoadBattle(battle, campaign);
+
+        BattleProcessor battleProcessor = new BattleProcessor(battle);
+
+        while (true)
+        {
+            Console.Write("> ");
+            string? input = Console.ReadLine();
+            if (input == null)
+                break;
+            else
+            {
+                BattleCommandResult res = battleProcessor.Execute(input);
+                if (!res.Status)
+                    Console.WriteLine(res.Error);
+            }
+        }
+    }
+}

@@ -31,6 +31,10 @@ public class DUnit : IAsset
 
     public Stats Stats => baseStats;
 
+    public string ClassID => unitClass;
+
+    public int Lives => lives;
+
     public DUnit()
     {
         this.unitID = "";

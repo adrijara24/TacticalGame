@@ -1,3 +1,4 @@
+using System.Numerics;
 using System.Text.Json.Nodes;
 using Tactical.Core.Persistence;
 
@@ -65,6 +66,24 @@ public class DMap : IAsset
         if (x < 0 || x >= Width || y < 0 || y >= Height)
             throw new ArgumentOutOfRangeException("Coordinates are out of bounds.");
         return tiles[x, y];
+    }
+
+    public HashSet<string> TileList()
+    {
+        HashSet<string> uniqueTiles = new HashSet<string>();
+        for(int x = 0; x < tiles.GetLength(0); x++)
+            for (int y = 0; y < tiles.GetLength(1); y++)
+                uniqueTiles.Add(tiles[x, y]);
+        return uniqueTiles;
+    }
+
+    public bool InBounds(Vector3 pos)
+    {
+        if (pos.X < 0 || pos.Y < 0 || pos.Z < 0)
+            return false;
+        if (pos.X >= Width || pos.Y > 0 || pos.Z >= Height)
+            return false;
+        return true;
     }
 
     public JsonObject ToJson()
