@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using Tactical.Core.Domain.Terrain;
 using Tactical.Core.Systems;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace Tactical.Core.Domain.Battle
 {
@@ -269,23 +272,122 @@ namespace Tactical.Core.Domain.Battle
             return true;
         }
 
+        private JsonObject GetUnitJson(Unit unit, int team)
+        {
+            JsonObject json = unit.Data.ToJson();
 
+            json["Team"] = team;
+
+            json["Position"] = new JsonObject
+            {
+                ["X"] = unit.Position.X,
+                ["Y"] = unit.Position.Y,
+                ["Z"] = unit.Position.Z
+            };
+
+            json["CurrentHP"] = unit.CurrentHP;
+            json["CurrentMP"] = unit.CurrentMP;
+            json["RemainingLives"] = unit.RemainingLives;
+            json["IsAlive"] = unit.IsAlive;
+            json["HasMoved"] = unit.HasMoved;
+            json["HasActed"] = unit.HasActed;
+
+            //json["BaseStats"] = unit.Data.Stats.ToJson();
+            json["Stats"] = unit.Stats.ToJson();
+
+            JsonArray inventory = new JsonArray();
+
+            for (int i = 0; i < unit.Inventory.InventorySize; i++)
+            {
+                var item = unit.Inventory[i];
+
+                JsonObject slot = new JsonObject
+                {
+                    ["Slot"] = i + 1,
+                    ["ID"] = item == null ? "NONE" : item.ID,
+                    ["RemainingUses"] = unit.Inventory.RemainingUses(i)
+                };
+
+                inventory.Add(slot);
+            }
+
+            json["Inventory"] = inventory;
+
+            return json;
+        }
 
         //===============================================
         // COMMANDS
         //===============================================
-        public BattleCommandResult CommandMove(MoveCommand command)
+        /// <summary>
+        /// Executes a MOVE command in the battle
+        /// </summary>
+        /// <param name="command">Command data</param>
+        /// <returns>Result of the command execution</returns>
+        public BattleCommandResult Command(MoveCommand command)
         {
             if (CanMove(command.unitID, command.position))
             {
                 Unit? unit = GetUnit(command.unitID);
                 if (unit == null)
                     return new BattleCommandResult(false, "Unit does not exist");
+                BattlePosition oldPos = unit.Position;
                 unit.Position = command.position;
                 unit.HasMoved = true;
-                return new BattleCommandResult(true, "");
+                return new BattleCommandResult(true, "Moved unit " + command.unitID + " from " + oldPos + " to " + command.position);
             }
             return new BattleCommandResult(false, "Could not complete movement");
+        }
+
+
+
+        //===============================================
+        // DATA COMMANDS
+        //===============================================
+
+        /// <summary>
+        /// Executes a TEAM command in the battle
+        /// </summary>
+        /// <param name="command">Command data</param>
+        /// <returns>Result of the command execution</returns>
+        public BattleCommandResult Command(TeamCommand command)
+        {
+            if (command.team != 1 && command.team != 2)
+                return new BattleCommandResult(false, "Team must be 1 or 2");
+
+            JsonArray units = new JsonArray();
+
+            foreach (Unit unit in GetTeam(command.team))
+                units.Add(GetUnitJson(unit, command.team));
+
+            JsonObject json = new JsonObject
+            {
+                ["Team"] = command.team,
+                ["Units"] = units
+            };
+
+            string output = json.ToJsonString(new JsonSerializerOptions { WriteIndented = true });
+
+            return new BattleCommandResult(true, output);
+        }
+
+        /// <summary>
+        /// Executes a UNIT command in the battle
+        /// </summary>
+        /// <param name="command">Command data</param>
+        /// <returns>Result of the command execution</returns>
+        public BattleCommandResult Command(UnitCommand command)
+        {
+            Unit? unit = GetUnit(command.unitID, out int team);
+
+            if (unit == null)
+                return new BattleCommandResult(false, "Unit '" + command.unitID + "' does not exist");
+
+            JsonObject json = GetUnitJson(unit, team);
+
+            string output = json.ToJsonString(new JsonSerializerOptions { WriteIndented = true });
+
+            return new BattleCommandResult(true, output);
         }
     }
 }

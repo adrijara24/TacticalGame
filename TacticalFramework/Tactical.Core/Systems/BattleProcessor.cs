@@ -21,10 +21,14 @@ namespace Tactical.Core.Systems
 
             switch (command)
             {
-                case ErrorCommand:
-                    return new BattleCommandResult(false, (command as ErrorCommand).errorMessage);
-                case MoveCommand:
-                    return battle.CommandMove(command as MoveCommand);
+                case ErrorCommand error:
+                    return new BattleCommandResult(false, error.errorMessage);
+                case MoveCommand move:
+                    return battle.Command(move);
+                case TeamCommand team:
+                    return battle.Command(team);
+                case UnitCommand unit:
+                    return battle.Command(unit);
                 default:
                     break;
             }

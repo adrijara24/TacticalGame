@@ -50,14 +50,19 @@ namespace Tactical.Core.Domain.Battle
         public bool HasMoved { get { return hasMoved; } set { hasMoved = value; } }
         public bool HasActed { get { return hasActed; } set { hasActed = value; } }
 
+        public int CurrentHP => currentHP;
+        public int CurrentMP => currentMP;
+        public int RemainingLives => remainingLives;
+        public Inventory Inventory => inventory;
+        public bool IsAlive => currentHP >= 0;
+        public DUnit Data => data;
+
         public void NewTurn()
         {
             hasActed = false;
             hasMoved = false;
         }
 
-        public bool IsAlive => currentHP >= 0;
-
-        public DUnit Data => data;
+        
     }
 }

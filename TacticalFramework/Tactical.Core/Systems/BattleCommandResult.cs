@@ -8,6 +8,8 @@ namespace Tactical.Core.Systems
     {
         public bool Status => status;
 
-        public string Error => message;
+        public string Error => status ? "" : message;
+
+        public string Output => status ? message : "";
     }
 }

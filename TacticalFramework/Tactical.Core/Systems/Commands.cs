@@ -24,6 +24,7 @@ namespace Tactical.Core.Systems
         }
     }
 
+    // Action commands
     internal class MoveCommand : Command
     {
         public string unitID;
@@ -32,6 +33,27 @@ namespace Tactical.Core.Systems
         {
             this.unitID = unitID;
             this.position = position;
+        }
+    }
+
+    // Data commands
+    internal class TeamCommand : Command
+    {
+        public int team;
+
+        public TeamCommand(int team) : base("TEAM")
+        {
+            this.team = team;
+        }
+    }
+
+    internal class UnitCommand : Command
+    {
+        public string unitID;
+
+        public UnitCommand(string unitID) : base("UNIT")
+        {
+            this.unitID = unitID;
         }
     }
 }

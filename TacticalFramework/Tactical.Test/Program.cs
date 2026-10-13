@@ -151,6 +151,8 @@ internal class Program
                 BattleCommandResult res = battleProcessor.Execute(input);
                 if (!res.Status)
                     Console.WriteLine(res.Error);
+                else if (!string.IsNullOrEmpty(res.Output))
+                    Console.WriteLine(res.Output);
             }
         }
     }
