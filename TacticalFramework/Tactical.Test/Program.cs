@@ -134,7 +134,7 @@ internal class Program
     {
         Console.WriteLine("Battle console. Type commands");
 
-        CampaignAssets campaign = CampaignSerializer.LoadCampaign("CommandTest", "C:\\Users\\shini\\Desktop\\UPC\\SLDS");
+        CampaignAssets campaign = CampaignSerializer.LoadCampaign("CommandTest", "");
         DBattle battle = campaign.ByTag<DBattle>("MovementTestBattle");
         AssetManager.Instance.LoadBattle(battle, campaign);
 

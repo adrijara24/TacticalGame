@@ -36,6 +36,34 @@ namespace Tactical.Core.Systems
         }
     }
 
+    internal class AttackCommand : Command
+    {
+        public string attackerID, targetID;
+
+        public AttackCommand(string attackerID, string targetID) : base("ATTACK")
+        {
+            this.attackerID = attackerID;
+            this.targetID = targetID;
+        }
+    }
+
+    internal class WaitCommand : Command
+    {
+        public string unitID;
+
+        public WaitCommand(string unitID) : base("WAIT")
+        {
+            this.unitID = unitID;
+        }
+    }
+
+    internal class EndTurnCommand : Command
+    {
+        public EndTurnCommand() : base("ENDTURN")
+        {
+        }
+    }
+
     // Data commands
     internal class TeamCommand : Command
     {
@@ -56,4 +84,37 @@ namespace Tactical.Core.Systems
             this.unitID = unitID;
         }
     }
+
+    internal class MoveOptionsCommand : Command
+    {
+        public string unitID;
+
+        public MoveOptionsCommand(string unitID) : base("MOVEOPTIONS")
+        {
+            this.unitID = unitID;
+        }
+    }
+
+    internal class StatusCommand : Command
+    {
+        public string unitID;
+        public int team;
+        public bool isTeam;
+
+        public StatusCommand(string unitID) : base("STATUS")
+        {
+            this.unitID = unitID;
+            this.team = 0;
+            this.isTeam = false;
+        }
+
+        public StatusCommand(int team) : base("STATUS")
+        {
+            this.unitID = "";
+            this.team = team;
+            this.isTeam = true;
+        }
+    }
+
+
 }

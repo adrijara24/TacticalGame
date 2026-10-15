@@ -25,11 +25,12 @@ namespace Tactical.Core.Domain.Battle
         public Unit(DUnit unit, BattlePosition position)
         {
             data = unit;
-            currentHP = unit.Stats.hp;
-            currentMP = unit.Stats.mana;
-            remainingLives = data.Lives;
+
             inventory = new Inventory(data.Inventory.Length, data.Inventory);
             this.position = position;
+            currentHP = Stats.hp;
+            currentMP = Stats.mana;
+            remainingLives = data.Lives;
         }
 
         public Stats Stats
@@ -54,7 +55,7 @@ namespace Tactical.Core.Domain.Battle
         public int CurrentMP => currentMP;
         public int RemainingLives => remainingLives;
         public Inventory Inventory => inventory;
-        public bool IsAlive => currentHP >= 0;
+        public bool IsAlive => currentHP > 0;
         public DUnit Data => data;
 
         public void NewTurn()
@@ -63,6 +64,12 @@ namespace Tactical.Core.Domain.Battle
             hasMoved = false;
         }
 
-        
+        public int TakeDamage(DamageInstance damage)
+        {
+            int oldHP = currentHP;
+            currentHP = damage.Apply(currentHP, Stats.hp, Stats.defense, Stats.magicDefense);
+            return oldHP - currentHP;
+        }
+
     }
 }

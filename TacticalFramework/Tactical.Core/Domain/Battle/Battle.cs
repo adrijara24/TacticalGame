@@ -19,6 +19,8 @@ namespace Tactical.Core.Domain.Battle
         int currentTeam;
         int turnNumber;
 
+        bool battleOver;
+
         public Battle(DBattle battle)
         {
             Definition = battle;
@@ -40,6 +42,24 @@ namespace Tactical.Core.Domain.Battle
             }
             currentTeam = 1;
             turnNumber = 1;
+            battleOver = false;
+        }
+
+        public int CurrentTeam => currentTeam;
+        public bool BattleOver => battleOver;
+
+        public int WinnerTeam
+        {
+            get
+            {
+                if (HasLivingUnits(1) && !HasLivingUnits(2))
+                    return 1;
+
+                if (HasLivingUnits(2) && !HasLivingUnits(1))
+                    return 2;
+
+                return 0;
+            }
         }
 
         public void AddUnit(int team, string unitID, BattlePosition position)
@@ -316,6 +336,63 @@ namespace Tactical.Core.Domain.Battle
             return json;
         }
 
+        private JsonObject GetMinimalUnitJson(Unit unit, int team)
+        {
+            return new JsonObject
+            {
+                ["ID"] = unit.Data.ID,
+                ["Team"] = team,
+                ["CurrentHP"] = unit.CurrentHP,
+                ["CurrentMP"] = unit.CurrentMP,
+                ["Position"] = new JsonObject
+                {
+                    ["X"] = unit.Position.X,
+                    ["Y"] = unit.Position.Y,
+                    ["Z"] = unit.Position.Z
+                }
+            };
+        }
+
+        private bool HasLivingUnits(int team)
+        {
+            foreach (Unit unit in GetTeam(team))
+            {
+                if (unit.IsAlive)
+                    return true;
+            }
+
+            return false;
+        }
+
+        public bool CheckAutomaticEndTurn()
+        {
+            if (battleOver)
+                return false;
+
+            // Check whether either team has been defeated.
+            if (!HasLivingUnits(1) || !HasLivingUnits(2))
+            {
+                battleOver = true;
+                return true;
+            }
+
+            // Every living unit on the current team must have acted.
+            foreach (Unit unit in GetTeam(currentTeam))
+            {
+                if (unit.IsAlive && !unit.HasActed)
+                    return false;
+            }
+
+            // Switch to the other team.
+            currentTeam = currentTeam == 1 ? 2 : 1;
+            turnNumber++;
+
+            foreach (Unit unit in GetTeam(currentTeam))
+                unit.NewTurn();
+
+            return true;
+        }
+
         //===============================================
         // COMMANDS
         //===============================================
@@ -339,8 +416,115 @@ namespace Tactical.Core.Domain.Battle
             return new BattleCommandResult(false, "Could not complete movement");
         }
 
+        /// <summary>
+        /// Executes a ATTACK command in the battle
+        /// </summary>
+        /// <param name="command">Command data</param>
+        /// <returns>Result of the command execution</returns>
+        public BattleCommandResult Command(AttackCommand command)
+        {
+            Unit? attacker = GetUnit(command.attackerID, out int attackerTeam);
 
+            if (attacker == null)
+                return new BattleCommandResult(false, "Attacker '" + command.attackerID + "' does not exist");
 
+            Unit? target = GetUnit(command.targetID, out int targetTeam);
+
+            if (target == null)
+                return new BattleCommandResult(false, "Target '" + command.targetID + "' does not exist");
+
+            if (attackerTeam != currentTeam)
+                return new BattleCommandResult(false, "It is not this unit's turn");
+
+            if (attackerTeam == targetTeam)
+                return new BattleCommandResult(false, "Cannot attack an allied unit");
+
+            if (!attacker.IsAlive)
+                return new BattleCommandResult(false, "Attacker is defeated");
+
+            if (!target.IsAlive)
+                return new BattleCommandResult(false, "Target is already defeated");
+
+            if (attacker.HasActed)
+                return new BattleCommandResult(false, "Unit has already acted this turn");
+
+            int distance = Math.Abs(attacker.Position.X - target.Position.X)
+                         + Math.Abs(attacker.Position.Y - target.Position.Y)
+                         + Math.Abs(attacker.Position.Z - target.Position.Z);
+
+            int attackRange = Math.Max(1, attacker.Stats.range);
+
+            if (distance > attackRange)
+                return new BattleCommandResult(false, "Target is out of range");
+
+            int attackPower = attacker.Stats.strength;
+            DamageInstance damage = new DamageInstance(attackPower, EDamageType.PHYSICAL);
+            int damageDealt = target.TakeDamage(damage);
+
+            attacker.HasActed = true;
+
+            if (!target.IsAlive)
+                return new BattleCommandResult(true, attacker.Data.ID + " defeated " + target.Data.ID + " with " + damageDealt + " damage");
+
+            return new BattleCommandResult(true, attacker.Data.ID + " attacked " + target.Data.ID + " for " + damageDealt + " damage. Target HP: " + target.CurrentHP + "/" + target.Stats.hp);
+        }
+
+        /// <summary>
+        /// Executes a WAIT command in the battle
+        /// </summary>
+        /// <param name="command">Command data</param>
+        /// <returns>Result of the command execution</returns>
+        public BattleCommandResult Command(WaitCommand command)
+        {
+            Unit? unit = GetUnit(command.unitID, out int team);
+
+            if (unit == null)
+                return new BattleCommandResult(false, "Unit '" + command.unitID + "' does not exist");
+
+            if (team != currentTeam)
+                return new BattleCommandResult(false, "It is not this unit's turn");
+
+            if (!unit.IsAlive)
+                return new BattleCommandResult(false, "Unit is defeated");
+
+            if (unit.HasActed)
+                return new BattleCommandResult(false, "Unit has already acted");
+
+            unit.HasActed = true;
+
+            return new BattleCommandResult(true, "Unit " + command.unitID + " waits");
+        }
+
+        /// <summary>
+        /// Executes a ENDTURN command in the battle
+        /// </summary>
+        /// <param name="command">Command data</param>
+        /// <returns>Result of the command execution</returns>
+        public BattleCommandResult Command(EndTurnCommand command)
+        {
+            if (battleOver)
+                return new BattleCommandResult(false, "Battle has ended");
+
+            if (!HasLivingUnits(1) || !HasLivingUnits(2))
+            {
+                battleOver = true;
+
+                if (WinnerTeam == 0)
+                    return new BattleCommandResult(true, "Battle ended in a draw");
+
+                return new BattleCommandResult(true, "Battle ended. Team " + WinnerTeam + " wins");
+            }
+
+            int previousTeam = currentTeam;
+
+            currentTeam = currentTeam == 1 ? 2 : 1;
+            turnNumber++;
+
+            foreach (Unit unit in GetTeam(currentTeam))
+                unit.NewTurn();
+
+            return new BattleCommandResult(true, "Team " + previousTeam + " ended its turn. Team " + currentTeam + "'s turn begins");
+        }
         //===============================================
         // DATA COMMANDS
         //===============================================
@@ -384,6 +568,99 @@ namespace Tactical.Core.Domain.Battle
                 return new BattleCommandResult(false, "Unit '" + command.unitID + "' does not exist");
 
             JsonObject json = GetUnitJson(unit, team);
+
+            string output = json.ToJsonString(new JsonSerializerOptions { WriteIndented = true });
+
+            return new BattleCommandResult(true, output);
+        }
+
+        /// <summary>
+        /// Executes a STATUS command in the battle
+        /// </summary>
+        /// <param name="command">Command data</param>
+        /// <returns>Result of the command execution</returns>
+        public BattleCommandResult Command(StatusCommand command)
+        {
+            JsonObject json;
+
+            if (command.isTeam)
+            {
+                JsonArray units = new JsonArray();
+
+                foreach (Unit unit in GetTeam(command.team))
+                    units.Add(GetMinimalUnitJson(unit, command.team));
+
+                json = new JsonObject
+                {
+                    ["Team"] = command.team,
+                    ["Units"] = units
+                };
+            }
+            else
+            {
+                Unit? unit = GetUnit(command.unitID, out int team);
+
+                if (unit == null)
+                    return new BattleCommandResult(false, "Unit '" + command.unitID + "' does not exist");
+
+                json = GetMinimalUnitJson(unit, team);
+            }
+
+            string output = json.ToJsonString(new JsonSerializerOptions { WriteIndented = true });
+
+            return new BattleCommandResult(true, output);
+        }
+
+        /// <summary>
+        /// Executes a MOVEOPTIONS command in the battle
+        /// </summary>
+        /// <param name="command">Command data</param>
+        /// <returns>Result of the command execution</returns>
+        public BattleCommandResult Command(MoveOptionsCommand command)
+        {
+            Unit? unit = GetUnit(command.unitID, out int team);
+
+            if (unit == null)
+                return new BattleCommandResult(false, "Unit '" + command.unitID + "' does not exist");
+
+            if (team != currentTeam)
+                return new BattleCommandResult(false, "It is not this unit's turn");
+
+            if (!unit.IsAlive || unit.HasMoved || unit.HasActed)
+                return new BattleCommandResult(false, "Unit cannot move this turn");
+
+            DMap map = AssetManager.Instance.GetMap();
+            JsonArray cells = new JsonArray();
+
+            for (int x = 0; x < map.Width; x++)
+            {
+                for (int z = 0; z < map.Height; z++)
+                {
+                    if (x == unit.Position.X && z == unit.Position.Z)
+                        continue;
+
+                    BattlePosition position = new BattlePosition(x, unit.Position.Y, z);
+                    int cost = FindMovementCost(command.unitID, position);
+
+                    if (cost < 0 || cost > unit.Stats.movement)
+                        continue;
+
+                    cells.Add(new JsonObject
+                    {
+                        ["X"] = x,
+                        ["Y"] = unit.Position.Y,
+                        ["Z"] = z,
+                        ["Cost"] = cost
+                    });
+                }
+            }
+
+            JsonObject json = new JsonObject
+            {
+                ["UnitID"] = command.unitID,
+                ["Movement"] = unit.Stats.movement,
+                ["Cells"] = cells
+            };
 
             string output = json.ToJsonString(new JsonSerializerOptions { WriteIndented = true });
 
