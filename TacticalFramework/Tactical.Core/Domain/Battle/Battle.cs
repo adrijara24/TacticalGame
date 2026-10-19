@@ -24,11 +24,19 @@ namespace Tactical.Core.Domain.Battle
 
         private List<string> turnMessages = new List<string>();
 
+        private HashSet<string> instanceIDs = new HashSet<string>();
+        private HashSet<string> battleDefinitionIDs = new HashSet<string>();
+
         public Battle(DBattle battle)
         {
             Definition = battle;
             team1 = new Dictionary<string, Unit>();
             team2 = new Dictionary<string, Unit>();
+            foreach (KeyValuePair<string, Vector3> unit in battle.team1)
+                battleDefinitionIDs.Add(unit.Key);
+
+            foreach (KeyValuePair<string, Vector3> unit in battle.team2)
+                battleDefinitionIDs.Add(unit.Key);
             foreach (KeyValuePair<string, Vector3> unit in battle.team1)
             {
                 BattlePosition pos;
@@ -67,19 +75,24 @@ namespace Tactical.Core.Domain.Battle
 
         public void AddUnit(int team, string unitID, BattlePosition position)
         {
+            if (team != 1 && team != 2)
+                throw new ArgumentException("Team must be 1 or 2");
+
             if (IsOccupied(position))
                 throw new InvalidOperationException("Cannot place a unit on an occupied position.");
-            switch (team)
-            {
-                case 1:
-                    team1.Add(unitID, new Unit(AssetManager.Instance.GetUnit(unitID), position));
-                    break;
-                case 2:
-                    team2.Add(unitID, new Unit(AssetManager.Instance.GetUnit(unitID), position));
-                    break;
-                default:
-                    break;
-            }
+
+            DUnit? definition = AssetManager.Instance.GetUnit(unitID);
+
+            if (definition == null)
+                throw new ArgumentException("Unit definition '" + unitID + "' does not exist");
+
+            string instanceID = CreateInstanceID(unitID);
+            Unit unit = new Unit(definition, position);
+
+            if (team == 1)
+                team1.Add(instanceID, unit);
+            else
+                team2.Add(instanceID, unit);
         }
 
         public Unit? GetUnit(string id)
@@ -299,6 +312,9 @@ namespace Tactical.Core.Domain.Battle
         {
             JsonObject json = unit.Data.ToJson();
 
+            json["DefinitionID"] = unit.Data.ID;
+            json["ID"] = GetInstanceID(unit);
+
             json["Team"] = team;
 
             json["Position"] = new JsonObject
@@ -343,7 +359,8 @@ namespace Tactical.Core.Domain.Battle
         {
             return new JsonObject
             {
-                ["ID"] = unit.Data.ID,
+                ["ID"] = GetInstanceID(unit),
+                ["DefinitionID"] = unit.Data.ID,
                 ["Team"] = team,
                 ["CurrentHP"] = unit.CurrentHP,
                 ["CurrentMP"] = unit.CurrentMP,
@@ -432,6 +449,42 @@ namespace Tactical.Core.Domain.Battle
             return output;
         }
 
+        private string CreateInstanceID(string definitionID)
+        {
+            if (instanceIDs.Add(definitionID))
+                return definitionID;
+
+            int suffix = 1;
+            string instanceID;
+
+            do
+            {
+                instanceID = definitionID + "_" + suffix;
+                suffix++;
+            }
+            while (instanceIDs.Contains(instanceID) || battleDefinitionIDs.Contains(instanceID));
+
+            instanceIDs.Add(instanceID);
+            return instanceID;
+        }
+
+        private string GetInstanceID(Unit unit)
+        {
+            foreach (KeyValuePair<string, Unit> entry in team1)
+            {
+                if (ReferenceEquals(entry.Value, unit))
+                    return entry.Key;
+            }
+
+            foreach (KeyValuePair<string, Unit> entry in team2)
+            {
+                if (ReferenceEquals(entry.Value, unit))
+                    return entry.Key;
+            }
+
+            return unit.Data.ID;
+        }
+
         //===============================================
         // COMMANDS
         //===============================================
@@ -487,6 +540,16 @@ namespace Tactical.Core.Domain.Battle
             if (attacker.HasActed)
                 return new BattleCommandResult(false, "Unit has already acted this turn");
 
+            int previousWeaponSlot = attacker.WeaponSlotIndex;
+
+            if (command.weaponSlot.HasValue)
+            {
+                if (!attacker.IsWeaponSlotValid(command.weaponSlot.Value))
+                    return new BattleCommandResult(false, "Selected inventory slot does not contain a weapon");
+
+                attacker.SetWeaponSlot(command.weaponSlot.Value);
+            }
+
             int distance = Math.Abs(attacker.Position.X - target.Position.X)
                          + Math.Abs(attacker.Position.Y - target.Position.Y)
                          + Math.Abs(attacker.Position.Z - target.Position.Z);
@@ -494,7 +557,15 @@ namespace Tactical.Core.Domain.Battle
             int attackRange = Math.Max(1, attacker.Stats.range);
 
             if (distance > attackRange)
+            {
+                if (command.weaponSlot.HasValue)
+                    attacker.SetWeaponSlot(previousWeaponSlot);
+
                 return new BattleCommandResult(false, "Target is out of range");
+            }
+
+            if (command.weaponSlot.HasValue)
+                attacker.ClampResourcesToStats();
 
             int attackPower = attacker.Stats.strength;
             DamageInstance damage = new DamageInstance(attackPower, EDamageType.PHYSICAL);
@@ -503,9 +574,9 @@ namespace Tactical.Core.Domain.Battle
             attacker.HasActed = true;
 
             if (!target.IsAlive)
-                return new BattleCommandResult(true, attacker.Data.ID + " defeated " + target.Data.ID + " with " + damageDealt + " damage");
+                return new BattleCommandResult(true, command.attackerID + " defeated " + command.targetID + " with " + damageDealt + " damage");
 
-            return new BattleCommandResult(true, attacker.Data.ID + " attacked " + target.Data.ID + " for " + damageDealt + " damage. Target HP: " + target.CurrentHP + "/" + target.Stats.hp);
+            return new BattleCommandResult(true, command.attackerID + " attacked " + command.targetID + " for " + damageDealt + " damage. Target HP: " + target.CurrentHP + "/" + target.Stats.hp);
         }
 
         /// <summary>

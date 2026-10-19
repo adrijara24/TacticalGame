@@ -35,6 +35,7 @@ namespace Tactical.Core.Domain.Battle
         public int Apply(int HP, int maxHP, int def, int res)
         {
             int newHP = HP;
+            
             switch(damageType)
             {
                 case EDamageType.PHYSICAL:

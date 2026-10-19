@@ -33,6 +33,15 @@ namespace Tactical.Core.Domain.Battle
             currentHP = Stats.hp;
             currentMP = Stats.mana;
             remainingLives = data.Lives;
+            weaponSlot = -1;
+            for (int i = 0; i < inventory.InventorySize; i++)
+            {
+                if (inventory[i] is DWeapon)
+                {
+                    weaponSlot = i;
+                    break;
+                }
+            }
         }
 
         public Stats Stats
@@ -40,8 +49,8 @@ namespace Tactical.Core.Domain.Battle
             get
             {
                 Stats total = data.Stats;
-                if (weaponSlot >= 0 && weaponSlot < inventory.InventorySize)
-                    total += inventory[weaponSlot] != null ? ((DWeapon)inventory[weaponSlot]).Stats : new Stats();
+                if (weaponSlot >= 0 && weaponSlot < inventory.InventorySize && inventory[weaponSlot] is DWeapon weapon)
+                    total += weapon.Stats;
                 total += AssetManager.Instance.GetClass(data.ClassID).Stats;
 
                 foreach (Effect effect in activeEffects)
@@ -63,6 +72,28 @@ namespace Tactical.Core.Domain.Battle
         public bool IsAlive => currentHP > 0;
         public DUnit Data => data;
 
+        public int WeaponSlotIndex => weaponSlot;
+        public int EquippedWeaponSlot => weaponSlot < 0 ? -1 : weaponSlot + 1;
+
+        public bool IsWeaponSlotValid(int slot)
+        {
+            if (slot == -1)
+                return true;
+
+            return slot >= 0 && slot < inventory.InventorySize && inventory[slot] is DWeapon;
+        }
+
+        public void SetWeaponSlot(int slot)
+        {
+            weaponSlot = slot;
+        }
+
+        public void ClampResourcesToStats()
+        {
+            currentHP = Math.Min(currentHP, Math.Max(0, Stats.hp));
+            currentMP = Math.Min(currentMP, Math.Max(0, Stats.mana));
+        }
+
         public void NewTurn()
         {
             hasActed = false;
@@ -71,8 +102,20 @@ namespace Tactical.Core.Domain.Battle
 
         public int TakeDamage(DamageInstance damage)
         {
+            if (!IsAlive && damage.DamageType == EDamageType.HEALING)
+                return 0;
+
             int oldHP = currentHP;
             currentHP = damage.Apply(currentHP, Stats.hp, Stats.defense, Stats.magicDefense);
+
+            if (oldHP > 0 && currentHP == 0)
+            {
+                List<Effect> effects = new List<Effect>(activeEffects);
+
+                foreach (Effect effect in effects)
+                    effect.Remove();
+            }
+
             return oldHP - currentHP;
         }
 

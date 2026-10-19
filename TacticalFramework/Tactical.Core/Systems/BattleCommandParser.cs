@@ -22,10 +22,22 @@ namespace Tactical.Core.Systems
                     return new MoveCommand(split[1], new BattlePosition(Int32.Parse(split[2]), Int32.Parse(split[3]), Int32.Parse(split[4])));
 
                 case "ATTACK":
-                    if (split.Length != 3)
-                        return new ErrorCommand("USAGE: ATTACK attackerID targetID");
-                
-                    return new AttackCommand(split[1], split[2]);
+                    if (split.Length != 3 && split.Length != 4)
+                        return new ErrorCommand("USAGE: ATTACK attackerID targetID [weaponSlot|NONE]");
+
+                    int? attackWeaponSlot = null;
+
+                    if (split.Length == 4)
+                    {
+                        if (split[3].Equals("NONE", StringComparison.OrdinalIgnoreCase))
+                            attackWeaponSlot = -1;
+                        else if (!Int32.TryParse(split[3], out int parsedWeaponSlot) || parsedWeaponSlot < 1)
+                            return new ErrorCommand("Weapon slot must be a positive number or NONE");
+                        else
+                            attackWeaponSlot = parsedWeaponSlot - 1;
+                    }
+
+                    return new AttackCommand(split[1], split[2], attackWeaponSlot);
 
                 case "USE":
                     if (split.Length != 3 && split.Length != 4)

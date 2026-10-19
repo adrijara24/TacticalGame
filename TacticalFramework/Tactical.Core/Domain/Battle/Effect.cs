@@ -18,6 +18,8 @@ namespace Tactical.Core.Domain.Battle
         private int turnsRemaining;
         private bool active;
 
+        private List<DEffectAction> activeStatActions = new List<DEffectAction>();
+
         public DEffect Definition => definition;
         public string ID => definition.ID;
         public Unit Source => source;
@@ -112,7 +114,7 @@ namespace Tactical.Core.Domain.Battle
             if (!active)
                 return bonus;
 
-            foreach (DEffectAction action in definition[EEffectTrigger.ONAPPLY])
+            foreach (DEffectAction action in activeStatActions)
             {
                 for (int i = 0; i < stacks; i++)
                     bonus += action.stats;
@@ -129,11 +131,22 @@ namespace Tactical.Core.Domain.Battle
                 return;
             }
 
+            if (!target.IsAlive)
+                return;
+
             if (!active && trigger != EEffectTrigger.ONEND)
                 return;
 
             foreach (DEffectAction action in definition[trigger])
+            {
+                if (!target.IsAlive)
+                    break;
+
+                if (!activeStatActions.Contains(action))
+                    activeStatActions.Add(action);
+
                 ExecuteAction(action, messages, depth + 1);
+            }
         }
 
         public void TurnStarted(List<string>? messages = null)
@@ -198,6 +211,9 @@ namespace Tactical.Core.Domain.Battle
                 return;
             }
 
+            if (!target.IsAlive)
+                return;
+
             if (action.damageDefinition != null)
             {
                 DamageInstance damage = action.damageDefinition.CreateDamageInstance();
@@ -209,6 +225,9 @@ namespace Tactical.Core.Domain.Battle
                     AddMessage(messages, target.Data.ID + " healed for " + (target.CurrentHP - oldHP) + " HP");
                 else
                     AddMessage(messages, target.Data.ID + " took " + (oldHP - target.CurrentHP) + " damage");
+
+                if (!target.IsAlive)
+                    return;
             }
 
             foreach (string effectID in action.removeEffects)
@@ -223,6 +242,9 @@ namespace Tactical.Core.Domain.Battle
 
             foreach (string effectID in action.addEffects)
             {
+                if (!target.IsAlive)
+                    return;
+
                 DEffect? addedDefinition = AssetManager.Instance.GetEffect(effectID);
 
                 if (addedDefinition == null)

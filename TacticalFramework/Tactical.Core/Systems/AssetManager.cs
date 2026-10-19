@@ -74,13 +74,7 @@ namespace Tactical.Core.Systems
             {
                 string unitID = battle.team1[i].Key;
                 DUnit unit = assets.ByTag<DUnit>(unitID);
-                if (dUnits.ContainsKey(unitID))
-                {
-                    // MISSING: Modify native unit IDs if they already exist.
-                    throw new NotImplementedException();
-                }
-                else
-                    dUnits.TryAdd(unitID, unit);
+                dUnits.TryAdd(unitID, unit);
                 foreach (string s in unit.Inventory)
                     if (s != "NONE")
                         items.TryAdd(s, assets.ByTag<DItem>(s));
@@ -92,13 +86,7 @@ namespace Tactical.Core.Systems
             {
                 string unitID = battle.team2[i].Key;
                 DUnit unit = assets.ByTag<DUnit>(unitID);
-                if (dUnits.ContainsKey(unitID))
-                {
-                    // MISSING: Modify native unit IDs if they already exist.
-                    throw new NotImplementedException();
-                }
-                else
-                    dUnits.TryAdd(unitID, unit);
+                dUnits.TryAdd(unitID, unit);
                 foreach (string s in unit.Inventory)
                     if (s != "NONE")
                         items.TryAdd(s, assets.ByTag<DItem>(s));

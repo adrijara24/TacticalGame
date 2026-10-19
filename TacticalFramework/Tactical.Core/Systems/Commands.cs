@@ -39,11 +39,13 @@ namespace Tactical.Core.Systems
     internal class AttackCommand : Command
     {
         public string attackerID, targetID;
+        public int? weaponSlot;
 
-        public AttackCommand(string attackerID, string targetID) : base("ATTACK")
+        public AttackCommand(string attackerID, string targetID, int? weaponSlot = null) : base("ATTACK")
         {
             this.attackerID = attackerID;
             this.targetID = targetID;
+            this.weaponSlot = weaponSlot;
         }
     }
 
