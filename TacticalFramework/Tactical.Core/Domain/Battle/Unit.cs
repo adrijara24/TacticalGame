@@ -22,6 +22,8 @@ namespace Tactical.Core.Domain.Battle
         private bool hasActed;
         private bool hasMoved;
 
+        private List<Effect> activeEffects = new List<Effect>();
+
         public Unit(DUnit unit, BattlePosition position)
         {
             data = unit;
@@ -38,9 +40,12 @@ namespace Tactical.Core.Domain.Battle
             get
             {
                 Stats total = data.Stats;
-                if (weaponSlot >= 0 && weaponSlot <= inventory.InventorySize)
+                if (weaponSlot >= 0 && weaponSlot < inventory.InventorySize)
                     total += inventory[weaponSlot] != null ? ((DWeapon)inventory[weaponSlot]).Stats : new Stats();
                 total += AssetManager.Instance.GetClass(data.ClassID).Stats;
+
+                foreach (Effect effect in activeEffects)
+                    total += effect.GetStatsBonus();
                 return total;
             }
         }
@@ -69,6 +74,61 @@ namespace Tactical.Core.Domain.Battle
             int oldHP = currentHP;
             currentHP = damage.Apply(currentHP, Stats.hp, Stats.defense, Stats.magicDefense);
             return oldHP - currentHP;
+        }
+
+        public List<Effect> GetActiveEffects()
+        {
+            return activeEffects;
+        }
+
+        public Effect? FindEffect(string id)
+        {
+            foreach (Effect effect in activeEffects)
+            {
+                if (effect.IsActive && effect.ID == id)
+                    return effect;
+            }
+
+            return null;
+        }
+
+        public void AddEffect(Effect effect)
+        {
+            if (effect.IsActive && FindEffect(effect.ID) == null)
+                activeEffects.Add(effect);
+        }
+
+        public void RemoveEffect(Effect effect)
+        {
+            activeEffects.Remove(effect);
+        }
+
+        public void NotifyTurnStarted(List<string> messages)
+        {
+            List<Effect> effects = new List<Effect>(activeEffects);
+
+            foreach (Effect effect in effects)
+            {
+                if (!activeEffects.Contains(effect))
+                    continue;
+
+                if (effect.IsActive)
+                    effect.TurnStarted(messages);
+            }
+        }
+
+        public void NotifyTurnPassed(List<string> messages)
+        {
+            List<Effect> effects = new List<Effect>(activeEffects);
+
+            foreach (Effect effect in effects)
+            {
+                if (!activeEffects.Contains(effect))
+                    continue;
+
+                if (effect.IsActive)
+                    effect.TurnPassed(messages);
+            }
         }
 
     }

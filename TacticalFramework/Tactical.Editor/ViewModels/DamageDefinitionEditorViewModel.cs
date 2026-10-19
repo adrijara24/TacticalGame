@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Tactical.Core.Domain;
+using Tactical.Core.Domain.Battle;
 
 namespace Tactical.Editor.ViewModels
 {

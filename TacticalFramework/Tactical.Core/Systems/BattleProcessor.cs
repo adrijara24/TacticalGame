@@ -36,6 +36,9 @@ namespace Tactical.Core.Systems
                 case AttackCommand attack:
                     result = battle.Command(attack);
                     break;
+                case UseCommand use:
+                    result = battle.Command(use);
+                    break;
                 case WaitCommand wait:
                     result = battle.Command(wait);
                     break;
@@ -75,6 +78,11 @@ namespace Tactical.Core.Systems
             {
                 turnMessage = "All living units on team " + previousTeam + " have acted. Team " + battle.CurrentTeam + "'s turn begins.";
             }
+
+            string effectMessages = battle.ConsumeTurnMessages();
+
+            if (!string.IsNullOrEmpty(effectMessages))
+                turnMessage += Environment.NewLine + effectMessages;
 
             if (result.Status)
             {

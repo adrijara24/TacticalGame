@@ -27,6 +27,17 @@ namespace Tactical.Core.Systems
                 
                     return new AttackCommand(split[1], split[2]);
 
+                case "USE":
+                    if (split.Length != 3 && split.Length != 4)
+                        return new ErrorCommand("USAGE: USE unitID slot [targetID]");
+
+                    if (!Int32.TryParse(split[2], out int slot) || slot < 1)
+                        return new ErrorCommand("Inventory slot must be a positive number");
+
+                    string targetID = split.Length == 4 ? split[3] : split[1];
+
+                    return new UseCommand(split[1], slot - 1, targetID);
+
                 case "WAIT":
                     if (split.Length != 2)
                         return new ErrorCommand("USAGE: WAIT unitID");

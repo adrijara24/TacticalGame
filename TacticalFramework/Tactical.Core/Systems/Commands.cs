@@ -47,6 +47,20 @@ namespace Tactical.Core.Systems
         }
     }
 
+    internal class UseCommand : Command
+    {
+        public string unitID;
+        public int slot;
+        public string targetID;
+
+        public UseCommand(string unitID, int slot, string targetID) : base("USE")
+        {
+            this.unitID = unitID;
+            this.slot = slot;
+            this.targetID = targetID;
+        }
+    }
+
     internal class WaitCommand : Command
     {
         public string unitID;

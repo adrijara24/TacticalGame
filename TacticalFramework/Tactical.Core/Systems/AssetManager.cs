@@ -23,7 +23,10 @@ namespace Tactical.Core.Systems
         private Dictionary<string, DItem> items;
 
         private Dictionary<string, DClass> dClasses;
+
         private Dictionary<string, DUnit> dUnits;
+
+        private Dictionary<string, DEffect> effects;
 
         private AssetManager()
         {
@@ -32,6 +35,7 @@ namespace Tactical.Core.Systems
             map = null;
             tiles = new Dictionary<string, DTile>();
             items = new Dictionary<string, DItem>();
+            effects = new Dictionary<string, DEffect>();
             battle = null;
         }
 
@@ -53,6 +57,10 @@ namespace Tactical.Core.Systems
             map = null;
             tiles.Clear();
             items.Clear();
+            effects.Clear();
+
+            foreach (DEffect effect in assets.GetAll<DEffect>())
+                effects.TryAdd(effect.ID, effect);
 
             map = assets.ByTag<DMap>(battle.mapID);
             {
@@ -99,29 +107,44 @@ namespace Tactical.Core.Systems
             }
         }
 
-        public DClass GetClass(string id)
+        public DClass? GetClass(string id)
         {
-            return dClasses[id];
+            DClass? val = null;
+            dClasses.TryGetValue(id, out val);
+            return val;
         }
 
-        public DUnit GetUnit(string id)
+        public DUnit? GetUnit(string id)
         {
-            return dUnits[id];
+            DUnit? val = null;
+            dUnits.TryGetValue(id, out val);
+            return val;
         }
 
-        public DMap GetMap()
+        public DMap? GetMap()
         {
             return map;
         }
 
-        public DTile GetTile(string id)
+        public DTile? GetTile(string id)
         {
-            return tiles[id];
+            DTile? val = null;
+            tiles.TryGetValue(id, out val);
+            return val;
         }
 
-        public DItem GetItem(string id)
+        public DItem? GetItem(string id)
         {
-            return items[id];
+            DItem? val = null;
+            items.TryGetValue(id, out val);
+            return val;
+        }
+
+        public DEffect? GetEffect(string id)
+        {
+            DEffect? val = null;
+            effects.TryGetValue(id, out val);
+            return val;
         }
     }
 }

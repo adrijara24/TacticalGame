@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.Json.Nodes;
 using Tactical.Core.Systems;
 
-namespace Tactical.Core.Domain
+namespace Tactical.Core.Domain.Battle
 {
     public class Inventory
     {

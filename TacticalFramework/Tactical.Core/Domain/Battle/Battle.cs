@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
-using Tactical.Core.Domain.Terrain;
-using Tactical.Core.Systems;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using Tactical.Core.Domain.Terrain;
+using Tactical.Core.Domain.Units;
+using Tactical.Core.Systems;
 
 namespace Tactical.Core.Domain.Battle
 {
@@ -20,6 +21,8 @@ namespace Tactical.Core.Domain.Battle
         int turnNumber;
 
         bool battleOver;
+
+        private List<string> turnMessages = new List<string>();
 
         public Battle(DBattle battle)
         {
@@ -364,33 +367,69 @@ namespace Tactical.Core.Domain.Battle
             return false;
         }
 
-        public bool CheckAutomaticEndTurn()
+        private bool AdvanceTurn()
         {
             if (battleOver)
                 return false;
 
-            // Check whether either team has been defeated.
+            turnMessages.Clear();
+
+            int endingTeam = currentTeam;
+
+            foreach (Unit unit in GetTeam(endingTeam))
+            {
+                if (unit.IsAlive)
+                    unit.NotifyTurnPassed(turnMessages);
+            }
+
             if (!HasLivingUnits(1) || !HasLivingUnits(2))
             {
                 battleOver = true;
                 return true;
             }
 
-            // Every living unit on the current team must have acted.
+            currentTeam = currentTeam == 1 ? 2 : 1;
+            turnNumber++;
+
+            foreach (Unit unit in GetTeam(currentTeam))
+            {
+                unit.NewTurn();
+
+                if (unit.IsAlive)
+                    unit.NotifyTurnStarted(turnMessages);
+            }
+
+            if (!HasLivingUnits(1) || !HasLivingUnits(2))
+                battleOver = true;
+
+            return true;
+        }
+
+        public bool CheckAutomaticEndTurn()
+        {
+            if (battleOver)
+                return false;
+
+            if (!HasLivingUnits(1) || !HasLivingUnits(2))
+            {
+                battleOver = true;
+                return true;
+            }
+
             foreach (Unit unit in GetTeam(currentTeam))
             {
                 if (unit.IsAlive && !unit.HasActed)
                     return false;
             }
 
-            // Switch to the other team.
-            currentTeam = currentTeam == 1 ? 2 : 1;
-            turnNumber++;
+            return AdvanceTurn();
+        }
 
-            foreach (Unit unit in GetTeam(currentTeam))
-                unit.NewTurn();
-
-            return true;
+        public string ConsumeTurnMessages()
+        {
+            string output = string.Join(Environment.NewLine, turnMessages);
+            turnMessages.Clear();
+            return output;
         }
 
         //===============================================
@@ -470,6 +509,65 @@ namespace Tactical.Core.Domain.Battle
         }
 
         /// <summary>
+        /// Executes a USE command in the battle
+        /// </summary>
+        /// <param name="command">Command data</param>
+        /// <returns>Result of the command execution</returns>
+        public BattleCommandResult Command(UseCommand command)
+        {
+            Unit? user = GetUnit(command.unitID, out int userTeam);
+
+            if (user == null)
+                return new BattleCommandResult(false, "Unit '" + command.unitID + "' does not exist");
+
+            if (userTeam != currentTeam)
+                return new BattleCommandResult(false, "It is not this unit's turn");
+
+            if (!user.IsAlive)
+                return new BattleCommandResult(false, "Unit is defeated");
+
+            if (user.HasActed)
+                return new BattleCommandResult(false, "Unit has already acted this turn");
+
+            if (command.slot < 0 || command.slot >= user.Inventory.InventorySize)
+                return new BattleCommandResult(false, "Inventory slot is out of bounds");
+
+            DItem? item = user.Inventory[command.slot];
+
+            if (item == null)
+                return new BattleCommandResult(false, "Inventory slot is empty");
+
+            if (item is not DItemConsumable consumable)
+                return new BattleCommandResult(false, "Only consumable items can be used with USE");
+
+            if (user.Inventory.RemainingUses(command.slot) == 0)
+                return new BattleCommandResult(false, "Item has no remaining uses");
+
+            Unit? target = GetUnit(command.targetID);
+
+            if (target == null)
+                return new BattleCommandResult(false, "Target '" + command.targetID + "' does not exist");
+
+            if (!target.IsAlive)
+                return new BattleCommandResult(false, "Target is defeated");
+
+            DEffect? definition = AssetManager.Instance.GetEffect(consumable.Effect);
+
+            if (definition == null)
+                return new BattleCommandResult(false, "Effect '" + consumable.Effect + "' does not exist");
+
+            List<string> messages = new List<string>();
+            messages.Add(user.Data.ID + " used " + item.Name + " on " + target.Data.ID);
+
+            Effect.Apply(definition, user, target, messages);
+
+            user.Inventory.Use(command.slot);
+            user.HasActed = true;
+
+            return new BattleCommandResult(true, string.Join(Environment.NewLine, messages));
+        }
+
+        /// <summary>
         /// Executes a WAIT command in the battle
         /// </summary>
         /// <param name="command">Command data</param>
@@ -517,14 +615,30 @@ namespace Tactical.Core.Domain.Battle
 
             int previousTeam = currentTeam;
 
-            currentTeam = currentTeam == 1 ? 2 : 1;
-            turnNumber++;
+            AdvanceTurn();
 
-            foreach (Unit unit in GetTeam(currentTeam))
-                unit.NewTurn();
+            string message;
 
-            return new BattleCommandResult(true, "Team " + previousTeam + " ended its turn. Team " + currentTeam + "'s turn begins");
+            if (battleOver)
+            {
+                if (WinnerTeam == 0)
+                    message = "Battle ended in a draw";
+                else
+                    message = "Battle ended. Team " + WinnerTeam + " wins";
+            }
+            else
+            {
+                message = "Team " + previousTeam + " ended its turn. Team " + currentTeam + "'s turn begins";
+            }
+
+            string effectMessages = ConsumeTurnMessages();
+
+            if (!string.IsNullOrEmpty(effectMessages))
+                message += Environment.NewLine + effectMessages;
+
+            return new BattleCommandResult(true, message);
         }
+
         //===============================================
         // DATA COMMANDS
         //===============================================

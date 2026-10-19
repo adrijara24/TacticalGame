@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Tactical.Core.Domain
+namespace Tactical.Core.Domain.Battle
 {
 
     public enum EDamageType
@@ -10,7 +10,7 @@ namespace Tactical.Core.Domain
         PHYSICAL = 1, MAGICAL = 2, PURE = 4, HEALING = 8
     }
 
-    struct DamageInstance
+    public struct DamageInstance
     {        
         readonly int value;
         readonly EDamageType damageType;

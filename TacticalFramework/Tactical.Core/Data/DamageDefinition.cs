@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Text.Json.Nodes;
+using Tactical.Core.Domain.Battle;
 using Tactical.Core.Persistence;
 
 namespace Tactical.Core.Domain
@@ -29,9 +30,10 @@ namespace Tactical.Core.Domain
 
         public EDamageType DamageType => damageType;
 
-        DamageInstance CreateDamageInstance(/*User, Target*/)
+        public DamageInstance CreateDamageInstance()
         {
-            return new DamageInstance(0, EDamageType.PURE);
+            // TODO: implement formula parsing.
+            return new DamageInstance(10, damageType);
         }
 
         public void FromJson(JsonObject json)
