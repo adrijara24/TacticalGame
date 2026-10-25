@@ -485,6 +485,81 @@ namespace Tactical.Core.Domain.Battle
             return unit.Data.ID;
         }
 
+        private List<Unit> GetAbilityTargets(Unit target, DAbility ability)
+        {
+            List<Unit> targets = new List<Unit>();
+            targets.Add(target);
+
+            foreach (Vector3 offset in ability.Area)
+            {
+                int x = target.Position.X + (int)MathF.Round(offset.X);
+                int y = target.Position.Y + (int)MathF.Round(offset.Y);
+                int z = target.Position.Z + (int)MathF.Round(offset.Z);
+
+                foreach (Unit unit in GetTeam(1))
+                {
+                    if (unit.IsAlive && unit.Position.X == x && unit.Position.Y == y && unit.Position.Z == z && !targets.Contains(unit))
+                        targets.Add(unit);
+                }
+
+                foreach (Unit unit in GetTeam(2))
+                {
+                    if (unit.IsAlive && unit.Position.X == x && unit.Position.Y == y && unit.Position.Z == z && !targets.Contains(unit))
+                        targets.Add(unit);
+                }
+            }
+
+            return targets;
+        }
+
+        private void ApplyAbilityAction(DAbilityAction action, Unit source, Unit target, List<string> messages)
+        {
+            if (!target.IsAlive)
+                return;
+
+            if (!string.IsNullOrWhiteSpace(action.damageDefinition.Formula))
+            {
+                DamageInstance damage = action.damageDefinition.CreateDamageInstance();
+                int oldHP = target.CurrentHP;
+
+                target.TakeDamage(damage);
+
+                if (damage.DamageType == EDamageType.HEALING)
+                    messages.Add(target.Data.ID + " healed for " + (target.CurrentHP - oldHP) + " HP");
+                else
+                    messages.Add(target.Data.ID + " took " + (oldHP - target.CurrentHP) + " damage");
+
+                if (!target.IsAlive)
+                    return;
+            }
+
+            foreach (string effectID in action.remEffects)
+            {
+                Effect? effect = target.FindEffect(effectID);
+
+                if (effect != null)
+                    effect.Remove(messages);
+                else
+                    messages.Add("Effect " + effectID + " was not active on " + target.Data.ID);
+            }
+
+            foreach (string effectID in action.addEffects)
+            {
+                if (!target.IsAlive)
+                    return;
+
+                DEffect? definition = AssetManager.Instance.GetEffect(effectID);
+
+                if (definition == null)
+                {
+                    messages.Add("Effect definition '" + effectID + "' does not exist");
+                    continue;
+                }
+
+                Effect.Apply(definition, source, target, messages);
+            }
+        }
+
         //===============================================
         // COMMANDS
         //===============================================
@@ -636,6 +711,105 @@ namespace Tactical.Core.Domain.Battle
             user.HasActed = true;
 
             return new BattleCommandResult(true, string.Join(Environment.NewLine, messages));
+        }
+
+        /// <summary>
+        /// Executes a ABILITY command in the battle
+        /// </summary>
+        /// <param name="command">Command data</param>
+        /// <returns>Result of the command execution</returns>
+        public BattleCommandResult Command(AbilityCommand command)
+        {
+            Unit? user = GetUnit(command.unitID, out int userTeam);
+
+            if (user == null)
+                return new BattleCommandResult(false, "Unit '" + command.unitID + "' does not exist");
+
+            if (userTeam != currentTeam)
+                return new BattleCommandResult(false, "It is not this unit's turn");
+
+            if (!user.IsAlive)
+                return new BattleCommandResult(false, "Unit is defeated");
+
+            if (user.HasActed)
+                return new BattleCommandResult(false, "Unit has already acted this turn");
+
+            DAbility? ability = AssetManager.Instance.GetAbility(command.abilityID);
+
+            if (ability == null)
+                return new BattleCommandResult(false, "Ability '" + command.abilityID + "' does not exist");
+
+            if (ability.AbilityType != EAbilityType.ACTIVE)
+                return new BattleCommandResult(false, "Cannot use a passive ability directly");
+
+            if (ability.ManaCost < 0 || user.CurrentMP < ability.ManaCost)
+                return new BattleCommandResult(false, "Not enough mana");
+
+            Unit? target = GetUnit(command.targetID, out int targetTeam);
+
+            if (target == null)
+                return new BattleCommandResult(false, "Target '" + command.targetID + "' does not exist");
+
+            if (!target.IsAlive)
+                return new BattleCommandResult(false, "Target is defeated");
+
+            switch (ability.Target)
+            {
+                case EAbilityTarget.SELF:
+                    if (target != user)
+                        return new BattleCommandResult(false, "This ability can only target the user");
+                    break;
+
+                case EAbilityTarget.ALLY:
+                    if (targetTeam != userTeam || target == user)
+                        return new BattleCommandResult(false, "This ability requires an allied target");
+                    break;
+
+                case EAbilityTarget.ENEMY:
+                    if (targetTeam == userTeam)
+                        return new BattleCommandResult(false, "This ability requires an enemy target");
+                    break;
+
+                case EAbilityTarget.ANY:
+                    break;
+
+                default:
+                    return new BattleCommandResult(false, "Ability has an invalid target type");
+            }
+
+            int distance = Math.Abs(user.Position.X - target.Position.X)
+                         + Math.Abs(user.Position.Y - target.Position.Y)
+                         + Math.Abs(user.Position.Z - target.Position.Z);
+
+            if (ability.MinRange < 0 || ability.MaxRange < ability.MinRange ||
+                distance < ability.MinRange || distance > ability.MaxRange)
+                return new BattleCommandResult(false, "Target is out of range");
+
+            List<Unit> targets = GetAbilityTargets(target, ability);
+            List<string> messages = new List<string>();
+
+            if (!user.SpendMana(ability.ManaCost))
+                return new BattleCommandResult(false, "Not enough mana");
+
+            foreach (Unit affectedTarget in targets)
+            {
+                foreach (DAbilityAction action in ability[EAbilityTrigger.ONUSE])
+                {
+                    if (!affectedTarget.IsAlive)
+                        break;
+
+                    ApplyAbilityAction(action, user, affectedTarget, messages);
+                }
+            }
+
+            user.HasActed = true;
+
+            string output = user.Data.ID + " used " + ability.Name + " on " + target.Data.ID;
+
+            if (messages.Count > 0)
+                output += Environment.NewLine + string.Join(Environment.NewLine, messages);
+
+            return new BattleCommandResult(true, output);
         }
 
         /// <summary>

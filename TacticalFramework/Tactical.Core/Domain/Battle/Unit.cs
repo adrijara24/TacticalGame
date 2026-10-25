@@ -119,6 +119,14 @@ namespace Tactical.Core.Domain.Battle
             return oldHP - currentHP;
         }
 
+        public bool SpendMana(int amount)
+        {
+            if (amount < 0 || currentMP < amount)
+                return false;
+            currentMP -= amount;
+            return true;
+        }
+
         public List<Effect> GetActiveEffects()
         {
             return activeEffects;

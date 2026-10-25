@@ -50,6 +50,14 @@ namespace Tactical.Core.Systems
 
                     return new UseCommand(split[1], slot - 1, targetID);
 
+                case "ABILITY":
+                    if (split.Length != 3 && split.Length != 4)
+                        return new ErrorCommand("USAGE: ABILITY unitID abilityID [targetID]");
+
+                    string abilityTargetID = split.Length == 4 ? split[3] : split[1];
+
+                    return new AbilityCommand(split[1], split[2], abilityTargetID);
+
                 case "WAIT":
                     if (split.Length != 2)
                         return new ErrorCommand("USAGE: WAIT unitID");

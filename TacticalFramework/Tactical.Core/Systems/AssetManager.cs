@@ -28,6 +28,8 @@ namespace Tactical.Core.Systems
 
         private Dictionary<string, DEffect> effects;
 
+        private Dictionary<string, DAbility> abilities;
+
         private AssetManager()
         {
             dClasses = new Dictionary<string, DClass>();
@@ -36,6 +38,7 @@ namespace Tactical.Core.Systems
             tiles = new Dictionary<string, DTile>();
             items = new Dictionary<string, DItem>();
             effects = new Dictionary<string, DEffect>();
+            abilities = new Dictionary<string, DAbility>();
             battle = null;
         }
 
@@ -58,9 +61,13 @@ namespace Tactical.Core.Systems
             tiles.Clear();
             items.Clear();
             effects.Clear();
+            abilities.Clear();
 
             foreach (DEffect effect in assets.GetAll<DEffect>())
                 effects.TryAdd(effect.ID, effect);
+
+            foreach (DAbility ability in assets.GetAll<DAbility>())
+                abilities.TryAdd(ability.ID, ability);
 
             map = assets.ByTag<DMap>(battle.mapID);
             {
@@ -132,6 +139,13 @@ namespace Tactical.Core.Systems
         {
             DEffect? val = null;
             effects.TryGetValue(id, out val);
+            return val;
+        }
+
+        public DAbility? GetAbility(string id)
+        {
+            DAbility? val = null;
+            abilities.TryGetValue(id, out val);
             return val;
         }
     }

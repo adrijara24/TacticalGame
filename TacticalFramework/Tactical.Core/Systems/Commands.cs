@@ -63,6 +63,20 @@ namespace Tactical.Core.Systems
         }
     }
 
+    internal class AbilityCommand : Command
+    {
+        public string unitID;
+        public string abilityID;
+        public string targetID;
+
+        public AbilityCommand(string unitID, string abilityID, string targetID) : base("ABILITY")
+        {
+            this.unitID = unitID;
+            this.abilityID = abilityID;
+            this.targetID = targetID;
+        }
+    }
+
     internal class WaitCommand : Command
     {
         public string unitID;

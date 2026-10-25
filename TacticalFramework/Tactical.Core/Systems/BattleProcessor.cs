@@ -39,6 +39,9 @@ namespace Tactical.Core.Systems
                 case UseCommand use:
                     result = battle.Command(use);
                     break;
+                case AbilityCommand ability:
+                    result = battle.Command(ability);
+                    break;
                 case WaitCommand wait:
                     result = battle.Command(wait);
                     break;
