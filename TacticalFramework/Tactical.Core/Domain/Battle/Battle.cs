@@ -739,6 +739,9 @@ namespace Tactical.Core.Domain.Battle
             if (ability == null)
                 return new BattleCommandResult(false, "Ability '" + command.abilityID + "' does not exist");
 
+            if (!user.HasAbility(command.abilityID))
+                return new BattleCommandResult(false, "Unit '" + command.unitID + "' does not have ability '" + command.abilityID + "'");
+
             if (ability.AbilityType != EAbilityType.ACTIVE)
                 return new BattleCommandResult(false, "Cannot use a passive ability directly");
 

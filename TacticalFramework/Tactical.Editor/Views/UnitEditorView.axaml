@@ -101,6 +101,35 @@
 
                 </Border>
 
+                <TextBlock Text="Abilities"
+           FontSize="18"
+           FontWeight="Bold" />
+
+<Border BorderThickness="1"
+        Padding="12">
+
+    <ItemsControl ItemsSource="{Binding Abilities}">
+
+        <ItemsControl.ItemTemplate>
+            <DataTemplate>
+                <Grid ColumnDefinitions="80,*"
+                      Margin="0,0,0,8"
+                      ColumnSpacing="8">
+
+                    <TextBlock Text="{Binding Label}"
+                               VerticalAlignment="Center" />
+
+                    <views:AssetIdPickerView Grid.Column="1"
+                                             DataContext="{Binding Picker}" />
+
+                </Grid>
+            </DataTemplate>
+        </ItemsControl.ItemTemplate>
+
+    </ItemsControl>
+
+</Border>
+
                 <TextBlock Text="Base Stats"
                            FontSize="18"
                            FontWeight="Bold" />

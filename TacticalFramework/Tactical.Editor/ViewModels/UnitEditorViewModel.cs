@@ -31,6 +31,8 @@ namespace Tactical.Editor.ViewModels
 
         public ObservableCollection<UnitInventorySlotViewModel> Inventory { get; } = new();
 
+        public ObservableCollection<UnitAbilitySlotViewModel> Abilities { get; } = new();
+
         public string Title => IsNew ? "New Unit" : "Edit Unit";
 
         public UnitEditorViewModel(MainViewModel owner) : this(owner, null) { }
@@ -48,6 +50,12 @@ namespace Tactical.Editor.ViewModels
             {
                 string itemId = source?["Inventory"]?.AsObject()?["Item" + (i + 1)]?.GetValue<string>() ?? "NONE";
                 Inventory.Add(new UnitInventorySlotViewModel(i + 1, new AssetIdPickerViewModel(owner, typeof(DItem), itemId)));
+            }
+
+            for (int i = 0; i < 5; i++)
+            {
+                string abilityId = source?["Abilities"]?.AsObject()?["Ability" + (i + 1)]?.GetValue<string>() ?? "NONE";
+                Abilities.Add(new UnitAbilitySlotViewModel(i + 1, new AssetIdPickerViewModel(owner, typeof(DAbility), abilityId)));
             }
 
             if (unit == null)
@@ -73,6 +81,36 @@ namespace Tactical.Editor.ViewModels
             for (int i = 0; i < Inventory.Count; i++)
                 inventory["Item" + (i + 1)] = Inventory[i].Picker.SelectedId;
 
+            JsonObject abilities = new JsonObject();
+            HashSet<string> assignedAbilities = new HashSet<string>(StringComparer.Ordinal);
+
+            for (int i = 0; i < Abilities.Count; i++)
+            {
+                string abilityId = Abilities[i].Picker.SelectedId.Trim();
+
+                if (string.IsNullOrWhiteSpace(abilityId))
+                    abilityId = "NONE";
+
+                if (abilityId != "NONE")
+                {
+                    if (!Owner.CampaignAssets.Contains<DAbility>(abilityId))
+                    {
+                        ErrorMessage = $"Ability '{abilityId}' does not exist.";
+                        asset = null;
+                        return false;
+                    }
+
+                    if (!assignedAbilities.Add(abilityId))
+                    {
+                        ErrorMessage = $"Ability '{abilityId}' is assigned more than once.";
+                        asset = null;
+                        return false;
+                    }
+                }
+
+                abilities["Ability" + (i + 1)] = abilityId;
+            }
+
             JsonObject json = new JsonObject
             {
                 ["ID"] = Id.Trim(),
@@ -81,7 +119,8 @@ namespace Tactical.Editor.ViewModels
                 ["ClassID"] = ClassPicker.SelectedId,
                 ["Stats"] = Stats.GetStats().ToJson(),
                 ["Lives"] = Lives,
-                ["Inventory"] = inventory
+                ["Inventory"] = inventory,
+                ["Abilities"] = abilities
             };
 
             DUnit result = new DUnit();
@@ -102,6 +141,19 @@ namespace Tactical.Editor.ViewModels
         public UnitInventorySlotViewModel(int slot, AssetIdPickerViewModel picker)
         {
             Label = $"Item {slot}";
+            Picker = picker;
+        }
+    }
+
+    public class UnitAbilitySlotViewModel
+    {
+        public string Label { get; }
+
+        public AssetIdPickerViewModel Picker { get; }
+
+        public UnitAbilitySlotViewModel(int slot, AssetIdPickerViewModel picker)
+        {
+            Label = $"Ability {slot}";
             Picker = picker;
         }
     }

@@ -17,6 +17,8 @@ public class DUnit : IAsset
 
     private string[] inventory;
 
+    private string[] abilities;
+
     private Stats baseStats;
 
     public string ID => unitID;
@@ -27,6 +29,11 @@ public class DUnit : IAsset
     public string[] Inventory
     {
         get { return inventory; }
+    }
+
+    public string[] Abilities
+    {
+        get { return abilities; }
     }
 
     public Stats Stats => baseStats;
@@ -46,6 +53,9 @@ public class DUnit : IAsset
         this.inventory = new string[5];
         for (int i = 0; i < inventory.Length; ++i)
             this.inventory[i] = "NONE";
+        this.abilities = new string[5];
+        for (int i = 0; i < abilities.Length; ++i)
+            this.abilities[i] = "NONE";
     }
 
     public DUnit(string unitID, Stats baseStats, string unitClass)
@@ -59,6 +69,9 @@ public class DUnit : IAsset
         this.inventory = new string[5];
         for (int i = 0; i < inventory.Length; ++i)
             this.inventory[i] = "NONE";
+        this.abilities = new string[5];
+        for (int i = 0; i < abilities.Length; ++i)
+            this.abilities[i] = "NONE";
     }
 
     public void FromJson(JsonObject json)
@@ -74,6 +87,17 @@ public class DUnit : IAsset
 
         for (int i = 0; i < inventory.Length; i++)
             inventory[i] = inv["Item" + (i + 1)]!.GetValue<string>();
+
+        if (json["Abilities"] is JsonObject abilityJson)
+        {
+            for (int i = 0; i < abilities.Length; i++)
+                abilities[i] = abilityJson["Ability" + (i + 1)]?.GetValue<string>() ?? "NONE";
+        }
+        else // Compatibility
+        {
+            for (int i = 0; i < abilities.Length; i++)
+                abilities[i] = "NONE";
+        }
     }
 
     public JsonObject ToJson()
@@ -89,6 +113,10 @@ public class DUnit : IAsset
         for (int i = 0; i < inventory.Length; i++)
             inv.Add("Item" + (i + 1), inventory[i]);
         json.Add("Inventory", inv);
+        JsonObject abilityJson = new JsonObject();
+        for (int i = 0; i < abilities.Length; i++)
+            abilityJson.Add("Ability" + (i + 1), abilities[i]);
+        json.Add("Abilities", abilityJson);
 
         return json;
     }

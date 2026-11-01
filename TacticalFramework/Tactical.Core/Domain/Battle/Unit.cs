@@ -182,5 +182,17 @@ namespace Tactical.Core.Domain.Battle
             }
         }
 
+        public bool HasAbility(string abilityID)
+        {
+            if (string.IsNullOrWhiteSpace(abilityID) || abilityID == "NONE")
+                return false;
+
+            foreach (string assignedAbility in data.Abilities)
+                if (assignedAbility == abilityID)
+                    return true;
+
+            return false;
+        }
+
     }
 }
