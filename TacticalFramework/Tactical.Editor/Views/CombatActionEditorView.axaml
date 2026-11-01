@@ -44,10 +44,12 @@
 
             <TextBlock Text="Stat Changes"
                        FontSize="16"
-                       FontWeight="Bold" />
+                       FontWeight="Bold"
+                       IsVisible="{Binding ShowStats}" />
 
             <Border BorderThickness="1"
-                    Padding="10">
+                    Padding="10"
+                    IsVisible="{Binding ShowStats}">
 
                 <views:StatsEditorView DataContext="{Binding Stats}" />
 

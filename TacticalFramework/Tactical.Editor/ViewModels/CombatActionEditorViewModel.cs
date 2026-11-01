@@ -33,7 +33,9 @@ namespace Tactical.Editor.ViewModels
 
         public ObservableCollection<AssetReferenceViewModel> RemoveEffects { get; } = new();
 
-        public CombatActionEditorViewModel(MainViewModel owner, Array triggerOptions, Enum trigger, DamageDefinition? damageDefinition, Stats stats, IEnumerable<string> addEffects, IEnumerable<string> removeEffects, bool damageRequired, Action<CombatActionEditorViewModel> removeCallback)
+        public bool ShowStats { get; }
+
+        public CombatActionEditorViewModel(MainViewModel owner, Array triggerOptions, Enum trigger, DamageDefinition? damageDefinition, Stats stats, IEnumerable<string> addEffects, IEnumerable<string> removeEffects, bool damageRequired, Action<CombatActionEditorViewModel> removeCallback, bool showStats = true)
         {
             this.owner = owner;
             this.damageRequired = damageRequired;
@@ -51,6 +53,7 @@ namespace Tactical.Editor.ViewModels
 
             foreach (string pattern in removeEffects)
                 RemoveEffects.Add(new AssetReferenceViewModel(owner, typeof(DEffect), pattern, true, RemoveRemoveEffect));
+            ShowStats = showStats;
         }
 
         [RelayCommand]

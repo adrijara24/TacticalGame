@@ -69,7 +69,7 @@ namespace Tactical.Editor.ViewModels
                 Area.Add(new AbilityAreaPointViewModel(point, RemoveAreaPoint));
 
             foreach (DAbilityAction action in ability.actions)
-                Actions.Add(new CombatActionEditorViewModel(owner, Enum.GetValues<EAbilityTrigger>(), action.trigger, action.damageDefinition, action.stats, action.addEffects, action.remEffects, true, RemoveAction));
+                Actions.Add(new CombatActionEditorViewModel(owner, Enum.GetValues<EAbilityTrigger>(), action.trigger, action.damageDefinition, action.stats, action.addEffects, action.remEffects, true, RemoveAction, false));
         }
 
         [RelayCommand]
@@ -86,7 +86,7 @@ namespace Tactical.Editor.ViewModels
         [RelayCommand]
         private void AddAction()
         {
-            Actions.Add(new CombatActionEditorViewModel(Owner, Enum.GetValues<EAbilityTrigger>(), EAbilityTrigger.ONUSE, new DamageDefinition(), new Stats(), Array.Empty<string>(), Array.Empty<string>(), true, RemoveAction));
+            Actions.Add(new CombatActionEditorViewModel(Owner, Enum.GetValues<EAbilityTrigger>(), EAbilityTrigger.ONUSE, new DamageDefinition(), new Stats(), Array.Empty<string>(), Array.Empty<string>(), true, RemoveAction, false));
         }
 
         private void RemoveAction(CombatActionEditorViewModel action)
