@@ -54,6 +54,10 @@ namespace Tactical.Core.Systems
 
         public void LoadBattle(DBattle battle, CampaignAssets assets)
         {
+            List<string> validationErrors = CampaignValidator.ValidateBattle(battle, assets);
+
+            if (validationErrors.Count > 0)
+                throw new System.IO.InvalidDataException("Battle '" + battle.ID + "' contains invalid asset references:" + Environment.NewLine + "- " + string.Join(Environment.NewLine + "- ", validationErrors));
             this.battle = battle;
             dClasses.Clear();
             dUnits.Clear();

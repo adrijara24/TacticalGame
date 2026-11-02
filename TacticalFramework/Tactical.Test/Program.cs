@@ -136,7 +136,15 @@ internal class Program
 
         CampaignAssets campaign = CampaignSerializer.LoadCampaign("CommandTest", "");
         DBattle battle = campaign.ByTag<DBattle>("MovementTestBattle");
-        AssetManager.Instance.LoadBattle(battle, campaign);
+        try
+        {
+            AssetManager.Instance.LoadBattle(battle, campaign);
+        }
+        catch (System.IO.InvalidDataException exception)
+        {
+            Console.WriteLine(exception.Message);
+            return;
+        }
 
         BattleProcessor battleProcessor = new BattleProcessor(battle);
 
