@@ -125,5 +125,16 @@ namespace Tactical.Editor.ViewModels
 
             return action;
         }
+
+        public bool ValidateDamageFormula(out string error)
+        {
+            if (!HasDamage)
+            {
+                error = "";
+                return true;
+            }
+
+            return DamageDefinition.TryValidateFormula(Damage.Formula, out error);
+        }
     }
 }

@@ -124,6 +124,16 @@ namespace Tactical.Editor.ViewModels
                 return false;
             }
 
+            for (int i = 0; i < Actions.Count; i++)
+            {
+                if (!Actions[i].ValidateDamageFormula(out string error))
+                {
+                    ErrorMessage = "Action " + (i + 1) + ": " + error;
+                    asset = null;
+                    return false;
+                }
+            }
+
             DAbility result = new DAbility();
 
             result.abilityID = Id.Trim();

@@ -87,10 +87,14 @@ namespace Tactical.Core.Persistence
         private static void ValidateAbility(DAbility ability, CampaignAssets assets, List<string> errors, HashSet<string> checkedEffects)
         {
             string source = "Ability '" + ability.ID + "'";
-
+            int actionIndex = 0;
             foreach (DAbilityAction action in ability.actions)
+            {
+                ValidateDamageFormula(action.damageDefinition, "Ability '" + ability.ID + "', action " + (actionIndex + 1), errors);
                 foreach (string effectID in action.addEffects)
                     ValidateEffect(effectID, source, assets, errors, checkedEffects);
+                actionIndex++;
+            }
         }
 
         private static void ValidateEffect(string effectID, string source, CampaignAssets assets, List<string> errors, HashSet<string> checkedEffects)
@@ -104,9 +108,17 @@ namespace Tactical.Core.Persistence
             DEffect effect = assets.ByTag<DEffect>(effectID);
 
             foreach (EEffectTrigger trigger in Enum.GetValues<EEffectTrigger>())
+            {
+                int actionIndex = 0;
                 foreach (DEffectAction action in effect[trigger])
+                {
+                    ValidateDamageFormula(action.damageDefinition, "Effect '" + effect.ID + "', action " + (actionIndex + 1), errors);
                     foreach (string addedEffectID in action.addEffects)
                         ValidateEffect(addedEffectID, "Effect '" + effect.ID + "'", assets, errors, checkedEffects);
+                    actionIndex++;
+                }
+
+            }
         }
 
         private static void ValidateItem(DItem item, CampaignAssets assets, List<string> errors, HashSet<string> checkedEffects)
@@ -178,6 +190,15 @@ namespace Tactical.Core.Persistence
         {
             if (!errors.Contains(message))
                 errors.Add(message);
+        }
+
+        private static void ValidateDamageFormula(DamageDefinition? definition, string context, List<string> errors)
+        {
+            if (definition == null)
+                return;
+
+            if (!DamageDefinition.TryValidateFormula(definition.Formula, out string error))
+                errors.Add(context + ": Invalid damage formula. " + error);
         }
     }
 }

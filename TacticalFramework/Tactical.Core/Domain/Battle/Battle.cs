@@ -519,7 +519,7 @@ namespace Tactical.Core.Domain.Battle
 
             if (!string.IsNullOrWhiteSpace(action.damageDefinition.Formula))
             {
-                DamageInstance damage = action.damageDefinition.CreateDamageInstance();
+                DamageInstance damage = action.damageDefinition.CreateDamageInstance(source.Stats, target.Stats);
                 int oldHP = target.CurrentHP;
 
                 target.TakeDamage(damage);

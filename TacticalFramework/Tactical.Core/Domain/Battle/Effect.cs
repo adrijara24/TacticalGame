@@ -216,7 +216,7 @@ namespace Tactical.Core.Domain.Battle
 
             if (action.damageDefinition != null)
             {
-                DamageInstance damage = action.damageDefinition.CreateDamageInstance();
+                DamageInstance damage = action.damageDefinition.CreateDamageInstance(source.Stats, target.Stats);
                 int oldHP = target.CurrentHP;
 
                 target.TakeDamage(damage);
