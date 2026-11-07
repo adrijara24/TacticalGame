@@ -488,23 +488,26 @@ namespace Tactical.Core.Domain.Battle
         private List<Unit> GetAbilityTargets(Unit target, DAbility ability)
         {
             List<Unit> targets = new List<Unit>();
+            HashSet<Unit> included = new HashSet<Unit>();
+
             targets.Add(target);
+            included.Add(target);
 
             foreach (Vector3 offset in ability.Area)
             {
-                int x = target.Position.X + (int)MathF.Round(offset.X);
-                int y = target.Position.Y + (int)MathF.Round(offset.Y);
-                int z = target.Position.Z + (int)MathF.Round(offset.Z);
+                long x = target.Position.X + (long)MathF.Round(offset.X);
+                long y = target.Position.Y + (long)MathF.Round(offset.Y);
+                long z = target.Position.Z + (long)MathF.Round(offset.Z);
 
                 foreach (Unit unit in GetTeam(1))
                 {
-                    if (unit.IsAlive && unit.Position.X == x && unit.Position.Y == y && unit.Position.Z == z && !targets.Contains(unit))
+                    if (unit.IsAlive && unit.Position.X == x && unit.Position.Y == y && unit.Position.Z == z && included.Add(unit))
                         targets.Add(unit);
                 }
 
                 foreach (Unit unit in GetTeam(2))
                 {
-                    if (unit.IsAlive && unit.Position.X == x && unit.Position.Y == y && unit.Position.Z == z && !targets.Contains(unit))
+                    if (unit.IsAlive && unit.Position.X == x && unit.Position.Y == y && unit.Position.Z == z && included.Add(unit))
                         targets.Add(unit);
                 }
             }
@@ -745,8 +748,16 @@ namespace Tactical.Core.Domain.Battle
             if (ability.AbilityType != EAbilityType.ACTIVE)
                 return new BattleCommandResult(false, "Cannot use a passive ability directly");
 
+            List<DAbilityAction> onUseActions = ability[EAbilityTrigger.ONUSE];
+
+            if (onUseActions.Count == 0)
+                return new BattleCommandResult(false, "Ability '" + ability.ID + "' has no ONUSE actions");
+
             if (ability.ManaCost < 0 || user.CurrentMP < ability.ManaCost)
                 return new BattleCommandResult(false, "Not enough mana");
+
+            if (ability.MinRange < 0 || ability.MaxRange < ability.MinRange)
+                return new BattleCommandResult(false, "Ability has an invalid range");
 
             Unit? target = GetUnit(command.targetID, out int targetTeam);
 
@@ -784,8 +795,7 @@ namespace Tactical.Core.Domain.Battle
                          + Math.Abs(user.Position.Y - target.Position.Y)
                          + Math.Abs(user.Position.Z - target.Position.Z);
 
-            if (ability.MinRange < 0 || ability.MaxRange < ability.MinRange ||
-                distance < ability.MinRange || distance > ability.MaxRange)
+            if (distance < ability.MinRange || distance > ability.MaxRange)
                 return new BattleCommandResult(false, "Target is out of range");
 
             List<Unit> targets = GetAbilityTargets(target, ability);
@@ -796,7 +806,7 @@ namespace Tactical.Core.Domain.Battle
 
             foreach (Unit affectedTarget in targets)
             {
-                foreach (DAbilityAction action in ability[EAbilityTrigger.ONUSE])
+                foreach (DAbilityAction action in onUseActions)
                 {
                     if (!affectedTarget.IsAlive)
                         break;

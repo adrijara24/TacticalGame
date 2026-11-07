@@ -125,6 +125,7 @@ public static class DamageFormulaValidatorTests
         // Evaluation: runtime errors
         RunTest(nameof(TestEvaluateDivisionByZero), TestEvaluateDivisionByZero, ref passed, ref failed);
         RunTest(nameof(TestEvaluateStatBasedDivisionByZero), TestEvaluateStatBasedDivisionByZero, ref passed, ref failed);
+        RunTest(nameof(TestEvaluateDivisionByZeroInsideExpression), TestEvaluateDivisionByZeroInsideExpression, ref passed, ref failed);
 
         Console.WriteLine("------------------------------------------");
         Console.WriteLine("Results: " + passed + "/" + (passed + failed) + " passed.");
@@ -367,6 +368,8 @@ public static class DamageFormulaValidatorTests
     // Evaluation tests: runtime errors
     // ------------------------------------------------------------------------
 
-    private static void TestEvaluateDivisionByZero() => AssertThrowsFormatException(() => Evaluate("10 / 0"));
-    private static void TestEvaluateStatBasedDivisionByZero() => AssertThrowsFormatException(() => Evaluate("user.STR / (target.DEF - target.DEF)"));
+    private static void TestEvaluateDivisionByZero() => AssertResult("10 / 0", 0);
+    private static void TestEvaluateStatBasedDivisionByZero() => AssertResult("user.STR / (target.DEF - target.DEF)", 0);
+
+    private static void TestEvaluateDivisionByZeroInsideExpression() => AssertResult("10 / 0 + 5", 0);
 }

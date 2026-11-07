@@ -159,7 +159,7 @@ namespace Tactical.Core.Domain;
 // IMPORTANT:
 // TryValidateFormula() checks syntax and stat references. It does not
 // evaluate the formula using actual unit stats. A formula with a divisor
-// that evaluates to zero can therefore pass validation and fail at runtime.
+// that evaluates to zero can therefore pass validation and fail at runtime, returning 0.
 // ============================================================================
 internal sealed class DamageFormulaParser
 {
@@ -190,13 +190,17 @@ internal sealed class DamageFormulaParser
             decimal rounded = decimal.Round(result, 0, MidpointRounding.AwayFromZero);
 
             if (rounded < int.MinValue || rounded > int.MaxValue)
-                throw new FormatException("Damage formula result exceeds the supported integer range.");
+                return 0;
 
             return decimal.ToInt32(rounded);
         }
-        catch (OverflowException exception)
+        catch (DivideByZeroException)
         {
-            throw new FormatException("Damage formula exceeds the supported numeric range.", exception);
+            return 0;
+        }
+        catch (OverflowException)
+        {
+            return 0;
         }
     }
 
@@ -262,7 +266,7 @@ internal sealed class DamageFormulaParser
                 decimal right = ParseUnary();
 
                 if (!validateOnly && right == 0)
-                    throw Error("Division by zero.");
+                    throw new DivideByZeroException();
 
                 value = validateOnly ? 1 : value / right;
             }

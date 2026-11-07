@@ -87,14 +87,53 @@ namespace Tactical.Core.Persistence
         private static void ValidateAbility(DAbility ability, CampaignAssets assets, List<string> errors, HashSet<string> checkedEffects)
         {
             string source = "Ability '" + ability.ID + "'";
+
+            if (!Enum.IsDefined(typeof(EAbilityType), ability.AbilityType))
+                AddError(errors, source + " has an invalid ability type.");
+
+            if (!Enum.IsDefined(typeof(EAbilityTarget), ability.Target))
+                AddError(errors, source + " has an invalid target type.");
+
+            if (ability.ManaCost < 0)
+                AddError(errors, source + " has a negative mana cost.");
+
+            if (ability.MinRange < 0 || ability.MaxRange < ability.MinRange)
+                AddError(errors, source + " has an invalid range.");
+
+            int areaIndex = 0;
+
+            foreach (Vector3 offset in ability.Area)
+            {
+                if (!float.IsFinite(offset.X) || !float.IsFinite(offset.Y) || !float.IsFinite(offset.Z) ||
+                    offset.X < int.MinValue || offset.X > int.MaxValue ||
+                    offset.Y < int.MinValue || offset.Y > int.MaxValue ||
+                    offset.Z < int.MinValue || offset.Z > int.MaxValue)
+                    AddError(errors, source + ", area offset " + (areaIndex + 1) + " has invalid coordinates.");
+
+                areaIndex++;
+            }
+
+            bool hasOnUseAction = false;
             int actionIndex = 0;
+
             foreach (DAbilityAction action in ability.actions)
             {
-                ValidateDamageFormula(action.damageDefinition, "Ability '" + ability.ID + "', action " + (actionIndex + 1), errors);
+                if (!Enum.IsDefined(typeof(EAbilityTrigger), action.trigger))
+                    AddError(errors, source + ", action " + (actionIndex + 1) + " has an invalid trigger.");
+
+                if (action.trigger == EAbilityTrigger.ONUSE)
+                    hasOnUseAction = true;
+
+                ValidateDamageFormula(action.damageDefinition, source + ", action " + (actionIndex + 1), errors);
+
                 foreach (string effectID in action.addEffects)
                     ValidateEffect(effectID, source, assets, errors, checkedEffects);
+
                 actionIndex++;
             }
+
+            if (ability.AbilityType == EAbilityType.ACTIVE && !hasOnUseAction)
+                AddError(errors, source + " is active but has no ONUSE actions.");
         }
 
         private static void ValidateEffect(string effectID, string source, CampaignAssets assets, List<string> errors, HashSet<string> checkedEffects)
@@ -197,8 +236,11 @@ namespace Tactical.Core.Persistence
             if (definition == null)
                 return;
 
+            if (!Enum.IsDefined(typeof(EDamageType), definition.DamageType))
+                AddError(errors, context + ": Invalid damage type.");
+
             if (!DamageDefinition.TryValidateFormula(definition.Formula, out string error))
-                errors.Add(context + ": Invalid damage formula. " + error);
+                AddError(errors, context + ": Invalid damage formula. " + error);
         }
     }
 }

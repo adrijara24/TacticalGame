@@ -103,6 +103,20 @@ namespace Tactical.Editor.ViewModels
                 return false;
             }
 
+            if (!Enum.IsDefined(typeof(EAbilityType), AbilityType))
+            {
+                ErrorMessage = "Invalid ability type.";
+                asset = null;
+                return false;
+            }
+
+            if (!Enum.IsDefined(typeof(EAbilityTarget), Target))
+            {
+                ErrorMessage = "Invalid target type.";
+                asset = null;
+                return false;
+            }
+
             if (ManaCost < 0)
             {
                 ErrorMessage = "Mana cost cannot be negative.";
@@ -122,6 +136,37 @@ namespace Tactical.Editor.ViewModels
                 ErrorMessage = "Minimum range cannot be greater than maximum range.";
                 asset = null;
                 return false;
+            }
+
+            if (AbilityType == EAbilityType.ACTIVE)
+            {
+                bool hasOnUseAction = false;
+
+                foreach (CombatActionEditorViewModel action in Actions)
+                    if (action.Trigger.Equals(EAbilityTrigger.ONUSE))
+                        hasOnUseAction = true;
+
+                if (!hasOnUseAction)
+                {
+                    ErrorMessage = "Active abilities must have at least one ONUSE action.";
+                    asset = null;
+                    return false;
+                }
+            }
+
+            for (int i = 0; i < Area.Count; i++)
+            {
+                Vector3 offset = Area[i].Build();
+
+                if (!float.IsFinite(offset.X) || !float.IsFinite(offset.Y) || !float.IsFinite(offset.Z) ||
+                    offset.X < int.MinValue || offset.X > int.MaxValue ||
+                    offset.Y < int.MinValue || offset.Y > int.MaxValue ||
+                    offset.Z < int.MinValue || offset.Z > int.MaxValue)
+                {
+                    ErrorMessage = "Area offset " + (i + 1) + " has invalid coordinates.";
+                    asset = null;
+                    return false;
+                }
             }
 
             for (int i = 0; i < Actions.Count; i++)

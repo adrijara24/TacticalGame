@@ -11,6 +11,7 @@ internal class Program
     private static void Main(string[] args)
     {
         //DamageFormulaValidatorTests.RunTests();
+        ActiveAbilityTests.RunTests();
         Console.WriteLine("Battle console. Type commands");
 
         CampaignAssets campaign = CampaignSerializer.LoadCampaign("CommandTest", "");
